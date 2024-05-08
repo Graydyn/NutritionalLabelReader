@@ -23,12 +23,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.graydyn.nutritionlib.databinding.ActivityNutritionReaderBinding
 import com.graydyn.nutritionlib.ui.theme.NutrionLabelReaderTheme
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
@@ -37,20 +39,14 @@ import java.util.concurrent.Executors
 class NutritionReaderActivity : ComponentActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private val TAG = "NutritionReaderActivity"
-    val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    private lateinit var viewBinding: ActivityNutritionReaderBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            NutrionLabelReaderTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Main(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
+        viewBinding = ActivityNutritionReaderBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
+
         if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -90,7 +86,7 @@ class NutritionReaderActivity : ComponentActivity() {
             val preview = Preview.Builder()
                .build()
                 .also {
-            //        it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
+                    it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
                 }
 
             val imageAnalyzer = ImageAnalysis.Builder()
@@ -164,23 +160,4 @@ class NutritionReaderActivity : ComponentActivity() {
     }
 }
 
-
-
-@Composable
-fun Main(modifier: Modifier = Modifier) {
-    AndroidView(
-        modifier = Modifier.fillMaxSize(), // Occupy the max size in the Compose UI tree
-        factory = { context ->
-            // Creates view
-            PreviewView(context).apply {
-                setOnClickListener {
-
-                }
-            }
-        },
-        update = { view ->
-
-        }
-    )
-}
 
