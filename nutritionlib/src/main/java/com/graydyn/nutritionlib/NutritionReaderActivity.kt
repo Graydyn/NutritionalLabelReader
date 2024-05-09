@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
@@ -17,22 +15,13 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.graydyn.nutritionlib.databinding.ActivityNutritionReaderBinding
-import com.graydyn.nutritionlib.ui.theme.NutrionLabelReaderTheme
-import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -148,10 +137,20 @@ class NutritionReaderActivity : ComponentActivity() {
             val mediaImage = imageProxy.image
             if (mediaImage != null) {
                 val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                val result = recognizer.process(image)
+                recognizer.process(image)
                     .addOnSuccessListener { visionText ->
-                        Log.d(TAG,visionText.text)
+                        val blocks: List<Text.TextBlock> = visionText.getTextBlocks()
+                        for (block in blocks){
+                            for (line in block.lines) {
+                                for (element in line.elements) {
+                                    Log.d(TAG,element.text)
+                                }
+                            }
+                        }
+                        imageProxy.close()
+                        mediaImage.close()
                     }
+
                     .addOnFailureListener { e ->
                         Log.e(TAG,e.message.toString())
                     }
