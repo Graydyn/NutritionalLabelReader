@@ -36,7 +36,6 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Button(
                         onClick = {
-
                             //startActivity(Intent(this, NutritionReaderActivity::class.java))
                             val intent = Intent(this, NutritionReaderActivity::class.java)
                             getLabelLauncher.launch(intent)
@@ -48,18 +47,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NutrionLabelReaderTheme {
-        Button(
-            onClick = {
-
-            },
-            content = {Text("Launch Camera")},
-        )
     }
 }

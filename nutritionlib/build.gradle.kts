@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.play.services.mlkit.text.recognition.common)
     implementation(libs.play.services.mlkit.text.recognition)
+    implementation(libs.fuzzywuzzy.kotlin)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

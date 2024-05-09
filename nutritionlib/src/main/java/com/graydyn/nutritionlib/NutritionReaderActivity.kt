@@ -1,6 +1,7 @@
 package com.graydyn.nutritionlib
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,8 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.graydyn.nutritionlib.databinding.ActivityNutritionReaderBinding
+import com.graydyn.nutritionlib.model.Macros
+import com.willowtreeapps.fuzzywuzzy.diffutils.FuzzySearch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -63,6 +66,13 @@ class NutritionReaderActivity : ComponentActivity() {
                 startCamera()
             }
         }
+
+    private fun returnResult(macros: Macros){
+        val intent = Intent()
+        intent.putExtra("ActivityResult", macros)
+        setResult(RESULT_OK, intent)
+        finish()
+    }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -130,22 +140,23 @@ class NutritionReaderActivity : ComponentActivity() {
             }.toTypedArray()
     }
 
-    private class TextAnalyzer : ImageAnalysis.Analyzer {
+    private inner class TextAnalyzer : ImageAnalysis.Analyzer {
         private val recognizer: TextRecognizer  = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         @OptIn(ExperimentalGetImage::class)
         override fun analyze(imageProxy: ImageProxy) {
             val mediaImage = imageProxy.image
             if (mediaImage != null) {
+                var macros = Macros()
                 val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                 recognizer.process(image)
                     .addOnSuccessListener { visionText ->
                         val blocks: List<Text.TextBlock> = visionText.getTextBlocks()
                         for (block in blocks){
-                            for (line in block.lines) {
-                                for (element in line.elements) {
-                                    Log.d(TAG,element.text)
-                                }
-                            }
+                            macros = readTextBlock(block, macros)
+                        }
+
+                        if (macros.isComplete()){
+                            returnResult(macros)
                         }
                         imageProxy.close()
                         mediaImage.close()
@@ -155,6 +166,43 @@ class NutritionReaderActivity : ComponentActivity() {
                         Log.e(TAG,e.message.toString())
                     }
             }
+        }
+
+        fun readTextBlock(textBlock: Text.TextBlock, macros: Macros) : Macros{
+            for (line in textBlock.lines) {
+                //usually each macro is on its own line, but sometimes they're all on one line so we need to accomodate that
+                val foundItems = ArrayList<String>()
+                for (element in line.elements) {
+                    if (FuzzySearch.ratio("Calories", element.text) > 90){
+                        foundItems.add("calories")
+                        Log.d(TAG,"Found something like calories " + element.text)
+                    }
+                    if (FuzzySearch.ratio("Protein", element.text) > 90){
+                        foundItems.add("protein")
+                        Log.d(TAG,"Found something like protein " + element.text)
+                    }
+                    if (FuzzySearch.ratio("Fat", element.text) > 90){
+                        foundItems.add("fat")
+                        Log.d(TAG,"Found something like fat " + element.text)
+                    }
+                    if ((FuzzySearch.ratio("Carb", element.text) > 90) || (FuzzySearch.ratio("Carbohydrate", element.text) > 90)){
+                        foundItems.add("carbs")
+                        Log.d(TAG,"Found something like carbs " + element.text)
+                    }
+                }
+                if (foundItems.size == 1){  //one macro per line of text
+                    for (element in line.elements) {
+                        val number =element.text.toString().filter { it.isDigit() }
+                        if (number != "") {
+                            Log.d(TAG, number)
+                            macros.protein = number.toInt()
+                        }
+                    }
+
+                }
+
+            }
+            return macros;
         }
     }
 }
