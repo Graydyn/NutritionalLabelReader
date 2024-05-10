@@ -24,25 +24,41 @@ class TextBlocksInterpreter {
                     lines.add(line)
                 }
             }
-            //sort the text lines from top to bottom and shuck the strings
-            //lines.sortBy { it.boundingBox?.top }
-            val shuckedLines = mutableListOf<String>()
-            var currentY = 0
-            var previousBlockHeight = 0;
+            //then we figure out where our row positions are
+            val rowYs = ArrayList<Int>()
+            var lastRowHeight = 0
             for (line in lines){
-                if (shuckedLines.size == 0 || (line.boundingBox!!.top - currentY < previousBlockHeight)){
-                    shuckedLines.add(line.text)
+                if (rowYs.size == 0){
+                    rowYs.add(line.boundingBox!!.top)
                 }
                 else{
-                    shuckedLines.set(shuckedLines.lastIndex, shuckedLines.last() + " " + line.text)
+                    if (rowYs.last() + lastRowHeight < line.boundingBox!!.top){
+                        rowYs.add(line.boundingBox!!.top)
+                    }
                 }
-                previousBlockHeight = line.boundingBox!!.bottom - line.boundingBox!!.top
-                currentY = line.boundingBox!!.top
-            }
-            for (line in shuckedLines){
-                Log.d(TAG, line)
+                lastRowHeight = line.boundingBox!!.bottom - line.boundingBox!!.top
             }
 
+            //now append each line to its closest row
+            val rowValues = ArrayList(MutableList(rowYs.size) { "" })
+            for (line in lines) {
+                var found = false;
+                for (i in 0..rowYs.size-1){
+                    if (!found) {
+                        if (i == rowYs.size - 1) {
+                            rowValues[i] = rowValues[i] + " " + line.text
+                        } else {
+                            if (Math.abs(line.boundingBox!!.top - rowYs[i]) < Math.abs(line.boundingBox!!.top - rowYs[i + 1])) {
+                                rowValues[i] = rowValues[i] + " " + line.text
+                                found = true;
+                            }
+                        }
+                    }
+                }
+            }
+            for (rowValue in rowValues){
+                Log.d(TAG, rowValue)
+            }
 
             return macros;
         }
