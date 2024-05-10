@@ -24,7 +24,6 @@ import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.graydyn.nutritionlib.databinding.ActivityNutritionReaderBinding
 import com.graydyn.nutritionlib.model.Macros
-import com.willowtreeapps.fuzzywuzzy.diffutils.FuzzySearch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -33,6 +32,7 @@ class NutritionReaderActivity : ComponentActivity() {
     private val TAG = "NutritionReaderActivity"
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     private lateinit var viewBinding: ActivityNutritionReaderBinding
+    private var macros = Macros()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,16 +146,15 @@ class NutritionReaderActivity : ComponentActivity() {
         override fun analyze(imageProxy: ImageProxy) {
             val mediaImage = imageProxy.image
             if (mediaImage != null) {
-                var macros = Macros()
                 val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                 recognizer.process(image)
                     .addOnSuccessListener { visionText ->
                         val blocks: List<Text.TextBlock> = visionText.getTextBlocks()
-                        for (block in blocks){
-                            macros = readTextBlock(block, macros)
-                        }
-
-                        if (macros.isComplete()){
+                        //with each analysed image, we add to our macros object
+                        //that way we dont need to capture every macro in one frame
+                        //it makes it easier to deal with things like glare
+                        macros = TextBlocksInterpreter.read(blocks, macros)
+                        if (macros.isComplete()) {
                             returnResult(macros)
                         }
                         imageProxy.close()
@@ -166,43 +165,6 @@ class NutritionReaderActivity : ComponentActivity() {
                         Log.e(TAG,e.message.toString())
                     }
             }
-        }
-
-        fun readTextBlock(textBlock: Text.TextBlock, macros: Macros) : Macros{
-            for (line in textBlock.lines) {
-                //usually each macro is on its own line, but sometimes they're all on one line so we need to accomodate that
-                val foundItems = ArrayList<String>()
-                for (element in line.elements) {
-                    if (FuzzySearch.ratio("Calories", element.text) > 90){
-                        foundItems.add("calories")
-                        Log.d(TAG,"Found something like calories " + element.text)
-                    }
-                    if (FuzzySearch.ratio("Protein", element.text) > 90){
-                        foundItems.add("protein")
-                        Log.d(TAG,"Found something like protein " + element.text)
-                    }
-                    if (FuzzySearch.ratio("Fat", element.text) > 90){
-                        foundItems.add("fat")
-                        Log.d(TAG,"Found something like fat " + element.text)
-                    }
-                    if ((FuzzySearch.ratio("Carb", element.text) > 90) || (FuzzySearch.ratio("Carbohydrate", element.text) > 90)){
-                        foundItems.add("carbs")
-                        Log.d(TAG,"Found something like carbs " + element.text)
-                    }
-                }
-                if (foundItems.size == 1){  //one macro per line of text
-                    for (element in line.elements) {
-                        val number =element.text.toString().filter { it.isDigit() }
-                        if (number != "") {
-                            Log.d(TAG, number)
-                            macros.protein = number.toInt()
-                        }
-                    }
-
-                }
-
-            }
-            return macros;
         }
     }
 }
