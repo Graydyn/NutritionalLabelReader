@@ -7,4 +7,8 @@ Most nutrition tracking apps are currently inputting macros from food packaging 
 Import the library as a module dependency, and that will give you NutritionReaderActivity which you can call with StartActivityForResult or similar.  The library handles permissions if you haven't.  Take a look at the app module in this repo for an example of how to import and use the NutritionReaderActivity
 
 
-Shoutout to the [FuzzyWuzzy](https://github.com/willowtreeapps/fuzzywuzzy-kotlin) which is an imortant dependency of this project! 
+## Future Work
+
+The library currently depends on the label being one macro per line.  Should be a pretty easy fix, I left a TODO of where to fix that
+
+An easy boost to accuracy would happen if the library support fuzzy match on words like protein, fat, etc. to accomodate minor OCR errors.

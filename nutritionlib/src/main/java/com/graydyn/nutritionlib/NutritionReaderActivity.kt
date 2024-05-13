@@ -154,6 +154,7 @@ class NutritionReaderActivity : ComponentActivity() {
                         //that way we dont need to capture every macro in one frame
                         //it makes it easier to deal with things like glare
                         macros = TextBlocksInterpreter.read(blocks, macros)
+                        Log.d(TAG, macros.toString())
                         if (macros.isComplete()) {
                             returnResult(macros)
                         }

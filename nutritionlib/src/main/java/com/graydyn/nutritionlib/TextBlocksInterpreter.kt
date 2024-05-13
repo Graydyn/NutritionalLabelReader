@@ -3,8 +3,6 @@ package com.graydyn.nutritionlib
 import android.util.Log
 import com.google.mlkit.vision.text.Text
 import com.graydyn.nutritionlib.model.Macros
-import com.willowtreeapps.fuzzywuzzy.diffutils.FuzzySearch
-import kotlin.math.log
 
 /**
  * The TextRecognizer returns a series of blocks af text
@@ -14,26 +12,30 @@ import kotlin.math.log
 class TextBlocksInterpreter {
     companion object {
         private val TAG = "TextBlocksInterpreter"
-        fun read(blocks: List<Text.TextBlock>, oldMacros: Macros) : Macros {
+        fun read(blocks: List<Text.TextBlock>, oldMacros: Macros): Macros {
             var macros = oldMacros;
 
             //first shuck the blocks into a big list of lines
             val lines = mutableListOf<Text.Line>()
             for (block in blocks) {
-                for (line in block.lines){
+                for (line in block.lines) {
                     lines.add(line)
                 }
             }
+
+            //make sure that left most blocks end up in the left side of final string
+            //lines.sortBy { it.boundingBox?.left }
+
             //then we figure out where our row positions are
             val rowYs = ArrayList<Int>()
             var lastRowHeight = 0
-            for (line in lines){
-                if (rowYs.size == 0){
-                    rowYs.add(line.boundingBox!!.top)
-                }
-                else{
-                    if (rowYs.last() + lastRowHeight < line.boundingBox!!.top){
-                        rowYs.add(line.boundingBox!!.top)
+            for (line in lines) {
+                val centerPoint = (line.boundingBox!!.bottom + line.boundingBox!!.top) / 2
+                if (rowYs.size == 0) {
+                    rowYs.add(centerPoint)
+                } else {
+                    if (centerPoint - rowYs.last() > lastRowHeight ) {
+                        rowYs.add(centerPoint)
                     }
                 }
                 lastRowHeight = line.boundingBox!!.bottom - line.boundingBox!!.top
@@ -42,64 +44,61 @@ class TextBlocksInterpreter {
             //now append each line to its closest row
             val rowValues = ArrayList(MutableList(rowYs.size) { "" })
             for (line in lines) {
-                var found = false;
-                for (i in 0..rowYs.size-1){
-                    if (!found) {
-                        if (i == rowYs.size - 1) {
-                            rowValues[i] = rowValues[i] + " " + line.text
-                        } else {
-                            if (Math.abs(line.boundingBox!!.top - rowYs[i]) < Math.abs(line.boundingBox!!.top - rowYs[i + 1])) {
-                                rowValues[i] = rowValues[i] + " " + line.text
-                                found = true;
-                            }
-                        }
+                var bestMatch = -1
+                var bestMatchIndex = 0
+                for (i in 0..rowYs.size - 1) {
+                    if ((Math.abs(line.boundingBox!!.top - rowYs[i]) < bestMatch) || (bestMatch == -1)){
+                        bestMatch = Math.abs(line.boundingBox!!.top - rowYs[i])
+                        bestMatchIndex = i
                     }
                 }
+                rowValues[bestMatchIndex] = rowValues[bestMatchIndex] + " " + line.text
             }
-            for (rowValue in rowValues){
-                Log.d(TAG, rowValue)
-            }
+            macros = readTextLines(rowValues, macros)
 
             return macros;
         }
 
-    fun readTextBlock(textBlock: Text.TextBlock, macros: Macros) : Macros{
-        for (line in textBlock.lines) {
-            //usually each macro is on its own line, but sometimes they're all on one line so we need to accomodate that
-            val foundItems = ArrayList<String>()
-            for (element in line.elements) {
-                if (FuzzySearch.ratio("Calories", element.text) > 90){
+        private fun readTextLines(lines: ArrayList<String>, macros: Macros): Macros {
+            for (line in lines) {
+                val foundItems = ArrayList<String>()
+
+                //remove numbers with the % symbol, as these are percent daily values, not what we are looking for
+                val re = Regex("[0-9]+%")
+                val lineNoPercent = re.replace(line, "")
+
+                //TODO fuzzy match would be better since OCR aint perfect, but its tricky to search for a fuzzy word in a text line
+                //TODO although there are only a few words we look up, maybe just make a dict of common mistakes?
+                if ((lineNoPercent.contains("Calories")) || (lineNoPercent.contains("calories"))){
                     foundItems.add("calories")
-                    Log.d(TAG,"Found something like calories " + element.text)
                 }
-                if (FuzzySearch.ratio("Protein", element.text) > 90){
+                if ((lineNoPercent.contains("Protein")) || (lineNoPercent.contains("protein"))){
                     foundItems.add("protein")
-                    Log.d(TAG,"Found something like protein " + element.text)
                 }
-                if (FuzzySearch.ratio("Fat", element.text) > 90){
+                if ((lineNoPercent.contains("Fat")) || (lineNoPercent.contains("fat"))){
                     foundItems.add("fat")
-                    Log.d(TAG,"Found something like fat " + element.text)
                 }
-                if ((FuzzySearch.ratio("Carb", element.text) > 90) || (FuzzySearch.ratio("Carbohydrate", element.text) > 90)){
+                if ((lineNoPercent.contains("Carbohydrate")) || (lineNoPercent.contains("carbohydrate"))){
                     foundItems.add("carbs")
-                    Log.d(TAG,"Found something like carbs " + element.text)
                 }
-            }
-            if (foundItems.size == 1){  //one macro per line of text
-                for (element in line.elements) {
-                    val number =element.text.toString().filter { it.isDigit() }
+
+                if (foundItems.size == 1) {  //one macro per line of text
+                    val number = lineNoPercent.filter { it.isDigit() }
                     if (number != "") {
-                        Log.d(TAG, number)
-                        macros.protein = number.toInt()
+                        when (foundItems[0]) {
+                            "protein" -> macros.protein = number.toInt()
+                            "fat" -> macros.fat = number.toInt()
+                            "carbs" -> macros.carbs = number.toInt()
+                            "calories" -> macros.calories = number.toInt()
+                        }
                     }
                 }
-
+                else{
+                    //TODO its unusual, but some labels do have more than one macro per line, could add support for that
+                }
             }
 
+            return macros
         }
-        return macros;
     }
-    }
-
-
 }
