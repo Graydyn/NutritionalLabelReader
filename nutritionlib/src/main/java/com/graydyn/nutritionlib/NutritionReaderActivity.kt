@@ -3,9 +3,14 @@ package com.graydyn.nutritionlib
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,11 +38,16 @@ class NutritionReaderActivity : ComponentActivity() {
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     private lateinit var viewBinding: ActivityNutritionReaderBinding
     private var macros = Macros()
+    private lateinit var ocrPassLogger: OcrPassLogger
+    private val messageHandler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityNutritionReaderBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
+        ocrPassLogger = OcrPassLogger(this)
+        updateProgressUI(Macros())
 
         if (allPermissionsGranted()) {
             startCamera()
@@ -121,9 +131,53 @@ class NutritionReaderActivity : ComponentActivity() {
             baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun updateProgressUI(macros: Macros) {
+        runOnUiThread {
+            fun bind(view: TextView, label: String, value: Int) {
+                if (value == -1) {
+                    view.text = "○  $label"
+                    view.setTextColor(Color.parseColor("#80FFFFFF"))
+                } else {
+                    view.text = "✓  $label: $value"
+                    view.setTextColor(Color.parseColor("#FF4CAF50"))
+                }
+            }
+            bind(viewBinding.statusCalories, "Calories", macros.calories)
+            bind(viewBinding.statusFat,      "Fat",      macros.fat)
+            bind(viewBinding.statusCarbs,    "Carbs",    macros.carbs)
+            bind(viewBinding.statusProtein,  "Protein",  macros.protein)
+        }
+    }
+
+    private fun showValidationMessage(text: String) {
+        runOnUiThread {
+            viewBinding.statusMessage.text = text
+            viewBinding.statusMessage.visibility = View.VISIBLE
+            messageHandler.removeCallbacksAndMessages(null)
+            messageHandler.postDelayed({
+                viewBinding.statusMessage.visibility = View.GONE
+            }, 2000)
+        }
+    }
+
+    // Protein: 4 cal/g, carbs: 4 cal/g, fat: 9 cal/g.
+    // Accepts up to 20% deviation to account for rounding and fiber differences.
+    private fun isCalorieConsistent(macros: Macros): Boolean {
+        val expected = macros.fat * 9 + macros.carbs * 4 + macros.protein * 4
+        val allowance = macros.calories * 0.20
+        val passes = Math.abs(macros.calories - expected) <= allowance
+        if (!passes) {
+            Log.d(TAG, "Calorie check failed: detected=${macros.calories}, " +
+                    "calculated=$expected (fat=${macros.fat}*9 + carbs=${macros.carbs}*4 + protein=${macros.protein}*4)")
+        }
+        return passes
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
+        messageHandler.removeCallbacksAndMessages(null)
+        if (::ocrPassLogger.isInitialized) ocrPassLogger.close()
     }
 
     companion object {
@@ -153,17 +207,27 @@ class NutritionReaderActivity : ComponentActivity() {
                         //with each analysed image, we add to our macros object
                         //that way we dont need to capture every macro in one frame
                         //it makes it easier to deal with things like glare
-                        macros = TextBlocksInterpreter.read(blocks, macros)
+                        val (newMacros, passData) = TextBlocksInterpreter.read(blocks, macros)
+                        macros = newMacros
+                        ocrPassLogger.log(passData)
+                        updateProgressUI(macros)
                         Log.d(TAG, macros.toString())
                         if (macros.isComplete()) {
-                            returnResult(macros)
+                            if (isCalorieConsistent(macros)) {
+                                returnResult(macros)
+                            } else {
+                                showValidationMessage("Validation failed, rescanning...")
+                                macros = Macros()
+                            }
                         }
                         imageProxy.close()
                         mediaImage.close()
                     }
 
                     .addOnFailureListener { e ->
-                        Log.e(TAG,e.message.toString())
+                        Log.e(TAG, e.message.toString())
+                        imageProxy.close()
+                        mediaImage.close()
                     }
             }
         }

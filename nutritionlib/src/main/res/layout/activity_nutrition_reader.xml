@@ -19,4 +19,64 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".50" />
 
+    <LinearLayout
+        android:id="@+id/statusPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#CC000000"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="14dp"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/statusCalories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#80FFFFFF"
+            android:textSize="15sp"
+            android:fontFamily="monospace"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/statusFat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#80FFFFFF"
+            android:textSize="15sp"
+            android:fontFamily="monospace"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/statusCarbs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#80FFFFFF"
+            android:textSize="15sp"
+            android:fontFamily="monospace"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/statusProtein"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#80FFFFFF"
+            android:textSize="15sp"
+            android:fontFamily="monospace"
+            android:paddingVertical="2dp" />
+
+        <TextView
+            android:id="@+id/statusMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="#FFFFAA00"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
