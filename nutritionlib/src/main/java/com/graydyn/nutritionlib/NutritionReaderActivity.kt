@@ -46,7 +46,7 @@ class NutritionReaderActivity : ComponentActivity() {
         viewBinding = ActivityNutritionReaderBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        ocrPassLogger = OcrPassLogger(this)
+        if (OCR_LOGGING_ENABLED) ocrPassLogger = OcrPassLogger(this)
         updateProgressUI(Macros())
 
         if (allPermissionsGranted()) {
@@ -182,6 +182,7 @@ class NutritionReaderActivity : ComponentActivity() {
 
     companion object {
         private const val TAG = "CameraXApp"
+        private const val OCR_LOGGING_ENABLED = false
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private val REQUIRED_PERMISSIONS =
             mutableListOf (
@@ -209,7 +210,7 @@ class NutritionReaderActivity : ComponentActivity() {
                         //it makes it easier to deal with things like glare
                         val (newMacros, passData) = TextBlocksInterpreter.read(blocks, macros)
                         macros = newMacros
-                        ocrPassLogger.log(passData)
+                        if (OCR_LOGGING_ENABLED) ocrPassLogger.log(passData)
                         updateProgressUI(macros)
                         Log.d(TAG, macros.toString())
                         if (macros.isComplete()) {
