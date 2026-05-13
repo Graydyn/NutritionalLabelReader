@@ -1,0 +1,38 @@
+docs/superpowers/specs/2026-05-13-create-new-food-design.md
+  63e281fb7681c419 1-148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "04e55761575ba20fd93c1f35afc8f53c2b10b8b0",
+  "prompts": {
+    "63e281fb7681c419": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "85199839-792f-4d2d-9cdf-79da6ba9faf1",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 149,
+      "total_deletions": 1,
+      "accepted_lines": 148,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/48dfffd23c2a9e01ad9617c6c22c40bc4c9b731b1d6d8621df93d199813ccfe5"
+    },
+    "c93f24eb6608d4dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "457a596d-e2e1-43aa-99b4-0c250cdd625a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 284,
+      "total_deletions": 2,
+      "accepted_lines": 284,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/b4dcad2d7e4c45356c29477053ab33475c43d78427ebe2223b011a4d733b0125"
+    }
+  }
+}
