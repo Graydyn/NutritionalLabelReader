@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -62,6 +63,9 @@ class SearchViewModel(
         userPreferencesRepository.proteinAndCaloriesOnly
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    private val _showCreateDialog = MutableStateFlow(false)
+    val showCreateDialog: StateFlow<Boolean> = _showCreateDialog.asStateFlow()
+
     fun onQueryChange(q: String) { _query.value = q }
 
     fun onSelectFood(food: Food) {
@@ -72,6 +76,41 @@ class SearchViewModel(
     fun onGramsChange(g: String) { _grams.value = g }
 
     fun clearSelection() { _selectedFood.value = null }
+
+    fun openCreateDialog() { _showCreateDialog.value = true }
+
+    fun dismissCreateDialog() { _showCreateDialog.value = false }
+
+    /**
+     * Inserts a new food row, then auto-selects it on the screen so the user
+     * can enter grams and log it. Sets _query to the new food's name so the
+     * existing debounced search re-queries the DB and includes the new row.
+     */
+    fun createFood(
+        name: String,
+        calories: Float,
+        protein: Float?,
+        fat: Float?,
+        carbs: Float?
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val food = Food(
+                name = name.trim(),
+                caloriesPer100g = calories,
+                proteinPer100g = protein,
+                fatPer100g = fat,
+                carbsPer100g = carbs
+            )
+            val id = foodRepo.add(food)
+            val saved = food.copy(id = id)
+            withContext(Dispatchers.Main) {
+                _selectedFood.value = saved
+                _grams.value = ""
+                _query.value = saved.name
+                _showCreateDialog.value = false
+            }
+        }
+    }
 
     /** Returns true on success; false if input is invalid. */
     fun logEntry(date: String, mealType: MealType): Boolean {
