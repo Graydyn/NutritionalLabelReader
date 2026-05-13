@@ -42,7 +42,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,8 +68,14 @@ fun GoalsScreen(
     val goals by viewModel.goals.collectAsState()
     val proteinOnly by viewModel.proteinOnly.collectAsState()
 
+    var hasLoadedGoals by remember { mutableStateOf(false) }
     LaunchedEffect(goals) {
-        goals?.let { viewModel.loadIntoForm(it) }
+        if (!hasLoadedGoals) {
+            goals?.let {
+                viewModel.loadIntoForm(it)
+                hasLoadedGoals = true
+            }
+        }
     }
 
     Scaffold(
