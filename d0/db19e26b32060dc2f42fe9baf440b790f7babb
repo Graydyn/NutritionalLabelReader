@@ -1,0 +1,40 @@
+tracker/src/main/java/com/graydyn/tracker/data/db/FoodDao.kt
+  63e281fb7681c419 14-16
+tracker/src/main/java/com/graydyn/tracker/data/repository/FoodRepository.kt
+  63e281fb7681c419 8-9
+  c93f24eb6608d4dc 1-7,10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "d0db19e26b32060dc2f42fe9baf440b790f7babb",
+  "prompts": {
+    "63e281fb7681c419": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "85199839-792f-4d2d-9cdf-79da6ba9faf1",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 22718,
+      "total_deletions": 0,
+      "accepted_lines": 22719,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/32b83216e8d205fcbf9ca7be5cfbd6ea1431694f21e1bf3f0a306e4190b5054f"
+    },
+    "c93f24eb6608d4dc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "457a596d-e2e1-43aa-99b4-0c250cdd625a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 284,
+      "overriden_lines": 0
+    }
+  }
+}
