@@ -60,7 +60,7 @@ class SearchViewModel(
 
     val proteinOnly: StateFlow<Boolean> =
         userPreferencesRepository.proteinAndCaloriesOnly
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     fun onQueryChange(q: String) { _query.value = q }
 

@@ -33,7 +33,7 @@ class GoalsViewModel(
 
     val proteinOnly: StateFlow<Boolean> =
         userPreferencesRepository.proteinAndCaloriesOnly
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     var caloriesInput by mutableStateOf("")
     var proteinInput by mutableStateOf("")

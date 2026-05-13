@@ -75,7 +75,7 @@ class DiaryViewModel(
 
     val proteinOnly: StateFlow<Boolean> =
         userPreferencesRepository.proteinAndCaloriesOnly
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     fun logScannedEntry(macros: Macros, mealType: MealType) {
         viewModelScope.launch(Dispatchers.IO) {
