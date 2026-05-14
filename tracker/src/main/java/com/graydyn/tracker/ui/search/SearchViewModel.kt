@@ -93,6 +93,9 @@ class SearchViewModel(
         fat: Float?,
         carbs: Float?
     ) {
+        // Close the dialog synchronously so a second tap cannot launch
+        // a duplicate insert before the coroutine completes.
+        _showCreateDialog.value = false
         viewModelScope.launch(Dispatchers.IO) {
             val food = Food(
                 name = name.trim(),
@@ -107,7 +110,6 @@ class SearchViewModel(
                 _selectedFood.value = saved
                 _grams.value = ""
                 _query.value = saved.name
-                _showCreateDialog.value = false
             }
         }
     }
