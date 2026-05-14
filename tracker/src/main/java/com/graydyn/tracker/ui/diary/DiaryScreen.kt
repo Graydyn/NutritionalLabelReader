@@ -100,6 +100,7 @@ fun DiaryScreen(
     val dailyTotals by viewModel.dailyTotals.collectAsState()
     val goals by viewModel.goals.collectAsState()
     val proteinOnly by viewModel.proteinOnly.collectAsState()
+    val scanInProgress by viewModel.scanInProgress.collectAsState()
 
     var scanTargetMeal by remember { mutableStateOf(MealType.BREAKFAST) }
 
@@ -201,6 +202,24 @@ fun DiaryScreen(
                     )
                 }
             }
+        }
+        scanInProgress?.let { macros ->
+            com.graydyn.tracker.ui.components.ScannedFoodDialog(
+                macros = macros,
+                onDismiss = { viewModel.dismissScannedFoodDialog() },
+                onSave = { name, unitType, calories, protein, fat, carbs, quantity ->
+                    viewModel.logScannedFood(
+                        name = name,
+                        unitType = unitType,
+                        calories = calories,
+                        protein = protein,
+                        fat = fat,
+                        carbs = carbs,
+                        quantity = quantity,
+                        mealType = scanTargetMeal
+                    )
+                }
+            )
         }
     }
 }
