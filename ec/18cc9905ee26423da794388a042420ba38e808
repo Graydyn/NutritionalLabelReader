@@ -1,0 +1,38 @@
+docs/superpowers/specs/2026-05-14-saved-meals-design.md
+  d9ad8c9bd4de863a 1-237
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "ec18cc9905ee26423da794388a042420ba38e808",
+  "prompts": {
+    "652b6a0e1c3e4a4f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7056b3c4-1538-48c3-a88d-e74070347829",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 1808,
+      "total_deletions": 2,
+      "accepted_lines": 2795,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/4c642e6df43a00f1c4e50c2a4045253e3063405aa52887a67f732b95fe9c0ac9"
+    },
+    "d9ad8c9bd4de863a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1284c63-77a5-40f4-84dd-24beae918f28",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 237,
+      "total_deletions": 0,
+      "accepted_lines": 237,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/3041c27866689f6d2ae5d0ab9277eeb48e728bc3b6aa1edc54c42262815953d6"
+    }
+  }
+}
