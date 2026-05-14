@@ -25,7 +25,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,15 +36,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,6 +74,7 @@ fun SearchScreen(
     val selectedFood by viewModel.selectedFood.collectAsState()
     val grams by viewModel.grams.collectAsState()
     val proteinOnly by viewModel.proteinOnly.collectAsState()
+    val showCreateDialog by viewModel.showCreateDialog.collectAsState()
     val mealLabel = mealType.name.lowercase().replaceFirstChar { it.uppercase() }
 
     Scaffold(
@@ -130,6 +138,21 @@ fun SearchScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
+            OutlinedButton(
+                onClick = { viewModel.openCreateDialog() },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Create new food")
+            }
 
             if (results.isEmpty()) {
                 EmptyState(query = query)
@@ -156,6 +179,15 @@ fun SearchScreen(
                     }
                 }
             }
+        }
+        if (showCreateDialog) {
+            CreateFoodDialog(
+                initialName = query,
+                onDismiss = { viewModel.dismissCreateDialog() },
+                onSave = { name, calories, protein, fat, carbs ->
+                    viewModel.createFood(name, calories, protein, fat, carbs)
+                }
+            )
         }
     }
 }
@@ -314,4 +346,106 @@ private fun MacroChip(label: String, color: androidx.compose.ui.graphics.Color) 
             fontWeight = FontWeight.Medium
         )
     }
+}
+
+@Composable
+private fun CreateFoodDialog(
+    initialName: String,
+    onDismiss: () -> Unit,
+    onSave: (name: String, calories: Float, protein: Float?, fat: Float?, carbs: Float?) -> Unit
+) {
+    var name by remember { mutableStateOf(initialName.trim()) }
+    var calories by remember { mutableStateOf("") }
+    var protein by remember { mutableStateOf("") }
+    var fat by remember { mutableStateOf("") }
+    var carbs by remember { mutableStateOf("") }
+
+    val trimmedName = name.trim()
+    val nameBlank = trimmedName.isEmpty()
+
+    val parsedCalories: Float? = calories.trim().toFloatOrNull()
+    val caloriesBlank = calories.isBlank()
+    val caloriesNonNumeric = !caloriesBlank && parsedCalories == null
+    val caloriesNegative = parsedCalories != null && parsedCalories < 0f
+
+    val canSave = !nameBlank && parsedCalories != null && parsedCalories >= 0f
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("New food") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Name") },
+                    singleLine = true,
+                    isError = nameBlank,
+                    supportingText = { if (nameBlank) Text("Required") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = calories,
+                    onValueChange = { calories = it },
+                    label = { Text("Calories per 100 g") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    isError = caloriesBlank || caloriesNonNumeric || caloriesNegative,
+                    supportingText = {
+                        when {
+                            caloriesBlank -> Text("Required")
+                            caloriesNonNumeric -> Text("Must be a number")
+                            caloriesNegative -> Text("Must be 0 or greater")
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = protein,
+                    onValueChange = { protein = it },
+                    label = { Text("Protein per 100 g (optional)") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = fat,
+                    onValueChange = { fat = it },
+                    label = { Text("Fat per 100 g (optional)") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = carbs,
+                    onValueChange = { carbs = it },
+                    label = { Text("Carbs per 100 g (optional)") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onSave(
+                        trimmedName,
+                        parsedCalories!!,
+                        protein.trim().toFloatOrNull(),
+                        fat.trim().toFloatOrNull(),
+                        carbs.trim().toFloatOrNull()
+                    )
+                },
+                enabled = canSave
+            ) { Text("Save") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }
