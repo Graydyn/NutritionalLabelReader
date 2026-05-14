@@ -100,15 +100,16 @@ fun ScannedFoodDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Row(
                         modifier = Modifier
+                            .weight(1f)
                             .clickable { selectUnit(FoodUnitType.GRAM) },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(selected = unitType == FoodUnitType.GRAM, onClick = { selectUnit(FoodUnitType.GRAM) })
                         Text("By weight")
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier
+                            .weight(1f)
                             .clickable { selectUnit(FoodUnitType.ITEM) },
                         verticalAlignment = Alignment.CenterVertically
                     ) {

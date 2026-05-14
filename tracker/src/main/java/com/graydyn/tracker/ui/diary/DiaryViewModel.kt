@@ -10,11 +10,13 @@ import com.graydyn.nutritionlib.model.Macros
 import com.graydyn.tracker.TrackerApplication
 import com.graydyn.tracker.data.db.TrackerDatabase
 import com.graydyn.tracker.data.model.DiaryEntry
+import com.graydyn.tracker.data.model.Food
 import com.graydyn.tracker.data.model.FoodUnitType
 import com.graydyn.tracker.data.model.Goals
 import com.graydyn.tracker.data.model.MealType
 import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.data.repository.DiaryRepository
+import com.graydyn.tracker.data.repository.FoodRepository
 import com.graydyn.tracker.data.repository.GoalsRepository
 import com.graydyn.tracker.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +49,7 @@ class DiaryViewModel(
     private val db = TrackerDatabase.getInstance(application)
     private val diaryRepo = DiaryRepository(db.diaryEntryDao())
     private val goalsRepo = GoalsRepository(db.goalsDao())
-    private val foodRepo = com.graydyn.tracker.data.repository.FoodRepository(db.foodDao())
+    private val foodRepo = FoodRepository(db.foodDao())
 
     private val _scanInProgress = MutableStateFlow<Macros?>(null)
     val scanInProgress: StateFlow<Macros?> = _scanInProgress.asStateFlow()
@@ -98,7 +100,7 @@ class DiaryViewModel(
         _scanInProgress.value = null
         viewModelScope.launch(Dispatchers.IO) {
             val food = when (unitType) {
-                FoodUnitType.GRAM -> com.graydyn.tracker.data.model.Food(
+                FoodUnitType.GRAM -> Food(
                     name = name.trim(),
                     unitType = FoodUnitType.GRAM,
                     caloriesPer100g = calories,
@@ -110,7 +112,7 @@ class DiaryViewModel(
                     fatPerItem = null,
                     carbsPerItem = null
                 )
-                FoodUnitType.ITEM -> com.graydyn.tracker.data.model.Food(
+                FoodUnitType.ITEM -> Food(
                     name = name.trim(),
                     unitType = FoodUnitType.ITEM,
                     caloriesPer100g = null,

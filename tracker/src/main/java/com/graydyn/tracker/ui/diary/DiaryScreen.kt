@@ -70,6 +70,7 @@ import com.graydyn.tracker.data.model.MealType
 import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.navigation.Route
 import com.graydyn.tracker.ui.components.MacroProgressBar
+import com.graydyn.tracker.ui.components.ScannedFoodDialog
 import com.graydyn.tracker.ui.theme.MacroCalories
 import com.graydyn.tracker.ui.theme.MacroCarbs
 import com.graydyn.tracker.ui.theme.MacroFat
@@ -204,7 +205,7 @@ fun DiaryScreen(
             }
         }
         scanInProgress?.let { macros ->
-            com.graydyn.tracker.ui.components.ScannedFoodDialog(
+            ScannedFoodDialog(
                 macros = macros,
                 onDismiss = { viewModel.dismissScannedFoodDialog() },
                 onSave = { name, unitType, calories, protein, fat, carbs, quantity ->
