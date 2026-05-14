@@ -10,6 +10,7 @@ import com.graydyn.nutritionlib.model.Macros
 import com.graydyn.tracker.TrackerApplication
 import com.graydyn.tracker.data.db.TrackerDatabase
 import com.graydyn.tracker.data.model.DiaryEntry
+import com.graydyn.tracker.data.model.FoodUnitType
 import com.graydyn.tracker.data.model.Goals
 import com.graydyn.tracker.data.model.MealType
 import com.graydyn.tracker.data.model.SourceType
@@ -85,7 +86,9 @@ class DiaryViewModel(
                 label = "Scanned label",
                 sourceType = SourceType.SCANNED,
                 foodId = null,
+                unitType = FoodUnitType.GRAM,
                 grams = null,
+                count = null,
                 calories = if (macros.calories != -1) macros.calories else null,
                 protein = if (macros.protein != -1) macros.protein.toFloat() else null,
                 fat = if (macros.fat != -1) macros.fat.toFloat() else null,
