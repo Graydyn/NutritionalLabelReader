@@ -65,6 +65,10 @@ import androidx.navigation.NavController
 import com.graydyn.tracker.data.model.Food
 import com.graydyn.tracker.data.model.FoodUnitType
 import com.graydyn.tracker.data.model.MealType
+import com.graydyn.tracker.data.model.calories
+import com.graydyn.tracker.data.model.carbs
+import com.graydyn.tracker.data.model.fat
+import com.graydyn.tracker.data.model.protein
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -270,30 +274,33 @@ private fun FoodResultCard(
             Spacer(modifier = Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 MacroChip(
-                    label = food.caloriesPer100g?.let { "${it.toInt()} kcal" } ?: "-- kcal",
+                    label = food.calories?.let { "${it.toInt()} kcal" } ?: "-- kcal",
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 MacroChip(
-                    label = "P ${food.proteinPer100g?.let { "${it}g" } ?: "--"}",
+                    label = "P ${food.protein?.let { "${it}g" } ?: "--"}",
                     color = MaterialTheme.colorScheme.secondary
                 )
                 if (!proteinOnly) {
                     Spacer(modifier = Modifier.width(6.dp))
                     MacroChip(
-                        label = "F ${food.fatPer100g?.let { "${it}g" } ?: "--"}",
+                        label = "F ${food.fat?.let { "${it}g" } ?: "--"}",
                         color = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     MacroChip(
-                        label = "C ${food.carbsPer100g?.let { "${it}g" } ?: "--"}",
+                        label = "C ${food.carbs?.let { "${it}g" } ?: "--"}",
                         color = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "per 100g",
+                text = when (food.unitType) {
+                    FoodUnitType.GRAM -> "per 100g"
+                    FoodUnitType.ITEM -> "per item"
+                },
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -312,7 +319,14 @@ private fun FoodResultCard(
                     OutlinedTextField(
                         value = quantity,
                         onValueChange = onQuantityChange,
-                        label = { Text("Grams") },
+                        label = {
+                            Text(
+                                when (food.unitType) {
+                                    FoodUnitType.GRAM -> "Grams"
+                                    FoodUnitType.ITEM -> "Items"
+                                }
+                            )
+                        },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
                         shape = MaterialTheme.shapes.small,
