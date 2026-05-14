@@ -1,0 +1,43 @@
+tracker/src/main/java/com/graydyn/tracker/data/model/Food.kt
+  652b6a0e1c3e4a4f 1-31
+tracker/src/main/java/com/graydyn/tracker/ui/search/SearchViewModel.kt
+  652b6a0e1c3e4a4f 13,103,107-111
+tracker/src/main/java/com/graydyn/tracker/data/seed/CsvSeeder.kt
+  652b6a0e1c3e4a4f 7,57-65
+  7e8a70a4a8d853e1 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "43635bf52839965e9b425c6b4cc7af7292a3cb59",
+  "prompts": {
+    "652b6a0e1c3e4a4f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7056b3c4-1538-48c3-a88d-e74070347829",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2116,
+      "total_deletions": 38,
+      "accepted_lines": 2154,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/9fc4fab6223ded755621317333c846db24f782fb457e47c8bb74b6547b8007d4"
+    },
+    "7e8a70a4a8d853e1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f636a62c-2f82-4523-b83f-2042f2b1215c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/2c76db0b54ac096acd5bc423aaa85958c83c27b893228f7772a40df7b215db7a"
+    }
+  }
+}
