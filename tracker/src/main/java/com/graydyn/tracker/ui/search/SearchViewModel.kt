@@ -28,9 +28,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class SearchViewModel(
@@ -57,8 +54,8 @@ class SearchViewModel(
     private val _selectedFood = MutableStateFlow<Food?>(null)
     val selectedFood: StateFlow<Food?> = _selectedFood.asStateFlow()
 
-    private val _grams = MutableStateFlow("")
-    val grams: StateFlow<String> = _grams.asStateFlow()
+    private val _quantity = MutableStateFlow("")
+    val quantity: StateFlow<String> = _quantity.asStateFlow()
 
     val proteinOnly: StateFlow<Boolean> =
         userPreferencesRepository.proteinAndCaloriesOnly
@@ -71,10 +68,10 @@ class SearchViewModel(
 
     fun onSelectFood(food: Food) {
         _selectedFood.value = food
-        _grams.value = ""
+        _quantity.value = ""
     }
 
-    fun onGramsChange(g: String) { _grams.value = g }
+    fun onQuantityChange(q: String) { _quantity.value = q }
 
     fun clearSelection() { _selectedFood.value = null }
 
@@ -82,39 +79,47 @@ class SearchViewModel(
 
     fun dismissCreateDialog() { _showCreateDialog.value = false }
 
-    /**
-     * Inserts a new food row, then auto-selects it on the screen so the user
-     * can enter grams and log it. Sets _query to the new food's name so the
-     * existing debounced search re-queries the DB and includes the new row.
-     */
     fun createFood(
         name: String,
+        unitType: FoodUnitType,
         calories: Float,
         protein: Float?,
         fat: Float?,
         carbs: Float?
     ) {
-        // Close the dialog synchronously so a second tap cannot launch
-        // a duplicate insert before the coroutine completes.
         _showCreateDialog.value = false
         viewModelScope.launch(Dispatchers.IO) {
-            val food = Food(
-                name = name.trim(),
-                unitType = FoodUnitType.GRAM,
-                caloriesPer100g = calories,
-                proteinPer100g = protein,
-                fatPer100g = fat,
-                carbsPer100g = carbs,
-                caloriesPerItem = null,
-                proteinPerItem = null,
-                fatPerItem = null,
-                carbsPerItem = null
-            )
+            val food = when (unitType) {
+                FoodUnitType.GRAM -> Food(
+                    name = name.trim(),
+                    unitType = FoodUnitType.GRAM,
+                    caloriesPer100g = calories,
+                    proteinPer100g = protein,
+                    fatPer100g = fat,
+                    carbsPer100g = carbs,
+                    caloriesPerItem = null,
+                    proteinPerItem = null,
+                    fatPerItem = null,
+                    carbsPerItem = null
+                )
+                FoodUnitType.ITEM -> Food(
+                    name = name.trim(),
+                    unitType = FoodUnitType.ITEM,
+                    caloriesPer100g = null,
+                    proteinPer100g = null,
+                    fatPer100g = null,
+                    carbsPer100g = null,
+                    caloriesPerItem = calories,
+                    proteinPerItem = protein,
+                    fatPerItem = fat,
+                    carbsPerItem = carbs
+                )
+            }
             val id = foodRepo.add(food)
             val saved = food.copy(id = id)
             withContext(Dispatchers.Main) {
                 _selectedFood.value = saved
-                _grams.value = ""
+                _quantity.value = ""
                 _query.value = saved.name
             }
         }
@@ -123,21 +128,38 @@ class SearchViewModel(
     /** Returns true on success; false if input is invalid. */
     fun logEntry(date: String, mealType: MealType): Boolean {
         val food = _selectedFood.value ?: return false
-        val grams = _grams.value.toFloatOrNull()?.takeIf { it > 0f } ?: return false
-        val entry = DiaryEntry(
-            date = date,
-            mealType = mealType,
-            label = food.name,
-            sourceType = SourceType.DATABASE,
-            foodId = food.id,
-            unitType = FoodUnitType.GRAM,
-            grams = grams,
-            count = null,
-            calories = food.caloriesPer100g?.let { (it * grams / 100f).toInt() },
-            protein = food.proteinPer100g?.let { it * grams / 100f },
-            fat = food.fatPer100g?.let { it * grams / 100f },
-            carbs = food.carbsPer100g?.let { it * grams / 100f }
-        )
+        val qty = _quantity.value.toFloatOrNull()?.takeIf { it > 0f } ?: return false
+
+        val entry = when (food.unitType) {
+            FoodUnitType.GRAM -> DiaryEntry(
+                date = date,
+                mealType = mealType,
+                label = food.name,
+                sourceType = SourceType.DATABASE,
+                foodId = food.id,
+                unitType = FoodUnitType.GRAM,
+                grams = qty,
+                count = null,
+                calories = food.caloriesPer100g?.let { (it * qty / 100f).toInt() },
+                protein = food.proteinPer100g?.let { it * qty / 100f },
+                fat = food.fatPer100g?.let { it * qty / 100f },
+                carbs = food.carbsPer100g?.let { it * qty / 100f }
+            )
+            FoodUnitType.ITEM -> DiaryEntry(
+                date = date,
+                mealType = mealType,
+                label = food.name,
+                sourceType = SourceType.DATABASE,
+                foodId = food.id,
+                unitType = FoodUnitType.ITEM,
+                grams = null,
+                count = qty,
+                calories = food.caloriesPerItem?.let { (it * qty).toInt() },
+                protein = food.proteinPerItem?.let { it * qty },
+                fat = food.fatPerItem?.let { it * qty },
+                carbs = food.carbsPerItem?.let { it * qty }
+            )
+        }
         viewModelScope.launch(Dispatchers.IO) { diaryRepo.insert(entry) }
         return true
     }

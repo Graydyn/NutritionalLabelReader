@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.graydyn.tracker.data.model.Food
+import com.graydyn.tracker.data.model.FoodUnitType
 import com.graydyn.tracker.data.model.MealType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +76,7 @@ fun SearchScreen(
     val query by viewModel.query.collectAsState()
     val results by viewModel.searchResults.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
-    val grams by viewModel.grams.collectAsState()
+    val quantity by viewModel.quantity.collectAsState()
     val proteinOnly by viewModel.proteinOnly.collectAsState()
     val showCreateDialog by viewModel.showCreateDialog.collectAsState()
     val mealLabel = mealType.name.lowercase().replaceFirstChar { it.uppercase() }
@@ -169,10 +170,10 @@ fun SearchScreen(
                         FoodResultCard(
                             food = food,
                             isSelected = food.id == selectedFood?.id,
-                            grams = if (food.id == selectedFood?.id) grams else "",
+                            quantity = if (food.id == selectedFood?.id) quantity else "",
                             proteinOnly = proteinOnly,
                             onSelect = { viewModel.onSelectFood(food) },
-                            onGramsChange = { viewModel.onGramsChange(it) },
+                            onQuantityChange = { viewModel.onQuantityChange(it) },
                             onAdd = {
                                 if (viewModel.logEntry(date, mealType)) {
                                     navController.popBackStack()
@@ -188,7 +189,7 @@ fun SearchScreen(
                 initialName = query,
                 onDismiss = { viewModel.dismissCreateDialog() },
                 onSave = { name, calories, protein, fat, carbs ->
-                    viewModel.createFood(name, calories, protein, fat, carbs)
+                    viewModel.createFood(name, FoodUnitType.GRAM, calories, protein, fat, carbs)
                 }
             )
         }
@@ -238,10 +239,10 @@ private fun EmptyState(query: String) {
 private fun FoodResultCard(
     food: Food,
     isSelected: Boolean,
-    grams: String,
+    quantity: String,
     proteinOnly: Boolean,
     onSelect: () -> Unit,
-    onGramsChange: (String) -> Unit,
+    onQuantityChange: (String) -> Unit,
     onAdd: () -> Unit
 ) {
     val container = if (isSelected) {
@@ -308,8 +309,8 @@ private fun FoodResultCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedTextField(
-                        value = grams,
-                        onValueChange = onGramsChange,
+                        value = quantity,
+                        onValueChange = onQuantityChange,
                         label = { Text("Grams") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
