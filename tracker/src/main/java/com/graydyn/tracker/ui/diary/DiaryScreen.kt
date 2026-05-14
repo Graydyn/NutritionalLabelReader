@@ -65,6 +65,7 @@ import androidx.navigation.NavController
 import com.graydyn.nutritionlib.NutritionReaderActivity
 import com.graydyn.nutritionlib.model.Macros
 import com.graydyn.tracker.data.model.DiaryEntry
+import com.graydyn.tracker.data.model.FoodUnitType
 import com.graydyn.tracker.data.model.MealType
 import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.navigation.Route
@@ -75,6 +76,9 @@ import com.graydyn.tracker.ui.theme.MacroFat
 import com.graydyn.tracker.ui.theme.MacroProtein
 
 private data class MealStyle(val label: String, val icon: ImageVector, val tint: Color)
+
+private fun formatCount(c: Float): String =
+    if (c == c.toInt().toFloat()) c.toInt().toString() else "%g".format(c)
 
 @Composable
 private fun mealStyle(mealType: MealType): MealStyle = when (mealType) {
@@ -457,8 +461,11 @@ private fun DiaryEntryRow(
             Text(
                 text = buildString {
                     append(entry.label)
-                    if (entry.sourceType == SourceType.DATABASE && entry.grams != null) {
-                        append("  ·  ${entry.grams.toInt()}g")
+                    if (entry.sourceType == SourceType.DATABASE) {
+                        when (entry.unitType) {
+                            FoodUnitType.GRAM -> entry.grams?.let { append("  ·  ${it.toInt()}g") }
+                            FoodUnitType.ITEM -> entry.count?.let { append("  ·  ×${formatCount(it)}") }
+                        }
                     }
                 },
                 style = MaterialTheme.typography.bodyMedium,
