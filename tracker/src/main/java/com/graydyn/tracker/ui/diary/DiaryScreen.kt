@@ -78,7 +78,7 @@ import com.graydyn.tracker.ui.theme.MacroProtein
 private data class MealStyle(val label: String, val icon: ImageVector, val tint: Color)
 
 private fun formatCount(c: Float): String =
-    if (c == c.toInt().toFloat()) c.toInt().toString() else "%g".format(c)
+    if (c == c.toInt().toFloat()) c.toInt().toString() else "%.2f".format(c).trimEnd('0').trimEnd('.')
 
 @Composable
 private fun mealStyle(mealType: MealType): MealStyle = when (mealType) {
