@@ -39,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -188,8 +189,8 @@ fun SearchScreen(
             CreateFoodDialog(
                 initialName = query,
                 onDismiss = { viewModel.dismissCreateDialog() },
-                onSave = { name, calories, protein, fat, carbs ->
-                    viewModel.createFood(name, FoodUnitType.GRAM, calories, protein, fat, carbs)
+                onSave = { name, unitType, calories, protein, fat, carbs ->
+                    viewModel.createFood(name, unitType, calories, protein, fat, carbs)
                 }
             )
         }
@@ -356,8 +357,16 @@ private fun MacroChip(label: String, color: androidx.compose.ui.graphics.Color) 
 private fun CreateFoodDialog(
     initialName: String,
     onDismiss: () -> Unit,
-    onSave: (name: String, calories: Float, protein: Float?, fat: Float?, carbs: Float?) -> Unit
+    onSave: (
+        name: String,
+        unitType: FoodUnitType,
+        calories: Float,
+        protein: Float?,
+        fat: Float?,
+        carbs: Float?
+    ) -> Unit
 ) {
+    var unitType by remember { mutableStateOf(FoodUnitType.GRAM) }
     var name by remember { mutableStateOf(initialName.trim()) }
     var calories by remember { mutableStateOf("") }
     var protein by remember { mutableStateOf("") }
@@ -380,11 +389,65 @@ private fun CreateFoodDialog(
 
     val canSave = !nameBlank && parsedCalories != null && parsedCalories >= 0f
 
+    val caloriesLabel = when (unitType) {
+        FoodUnitType.GRAM -> "Calories per 100 g"
+        FoodUnitType.ITEM -> "Calories per item"
+    }
+    val proteinLabel = when (unitType) {
+        FoodUnitType.GRAM -> "Protein per 100 g (optional)"
+        FoodUnitType.ITEM -> "Protein per item (optional)"
+    }
+    val fatLabel = when (unitType) {
+        FoodUnitType.GRAM -> "Fat per 100 g (optional)"
+        FoodUnitType.ITEM -> "Fat per item (optional)"
+    }
+    val carbsLabel = when (unitType) {
+        FoodUnitType.GRAM -> "Carbs per 100 g (optional)"
+        FoodUnitType.ITEM -> "Carbs per item (optional)"
+    }
+
+    fun selectUnit(next: FoodUnitType) {
+        if (next == unitType) return
+        unitType = next
+        // Clear macro fields so leftover per-100g values aren't silently saved as per-item.
+        calories = ""
+        protein = ""
+        fat = ""
+        carbs = ""
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("New food") },
         text = {
             Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { selectUnit(FoodUnitType.GRAM) },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = unitType == FoodUnitType.GRAM,
+                            onClick = { selectUnit(FoodUnitType.GRAM) }
+                        )
+                        Text("Measured by weight")
+                    }
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { selectUnit(FoodUnitType.ITEM) },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = unitType == FoodUnitType.ITEM,
+                            onClick = { selectUnit(FoodUnitType.ITEM) }
+                        )
+                        Text("Counted as items")
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -400,7 +463,7 @@ private fun CreateFoodDialog(
                 OutlinedTextField(
                     value = calories,
                     onValueChange = { calories = it },
-                    label = { Text("Calories per 100 g") },
+                    label = { Text(caloriesLabel) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     isError = caloriesBlank || caloriesNonNumeric || caloriesNegative,
@@ -416,7 +479,7 @@ private fun CreateFoodDialog(
                 OutlinedTextField(
                     value = protein,
                     onValueChange = { protein = it },
-                    label = { Text("Protein per 100 g (optional)") },
+                    label = { Text(proteinLabel) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
@@ -425,7 +488,7 @@ private fun CreateFoodDialog(
                 OutlinedTextField(
                     value = fat,
                     onValueChange = { fat = it },
-                    label = { Text("Fat per 100 g (optional)") },
+                    label = { Text(fatLabel) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
@@ -434,7 +497,7 @@ private fun CreateFoodDialog(
                 OutlinedTextField(
                     value = carbs,
                     onValueChange = { carbs = it },
-                    label = { Text("Carbs per 100 g (optional)") },
+                    label = { Text(carbsLabel) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
@@ -446,6 +509,7 @@ private fun CreateFoodDialog(
                 onClick = {
                     onSave(
                         trimmedName,
+                        unitType,
                         parsedCalories!!,
                         protein.trim().toFloatOrNull(),
                         fat.trim().toFloatOrNull(),
