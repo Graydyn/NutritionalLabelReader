@@ -381,7 +381,7 @@ private fun CreateFoodDialog(
                     label = { Text("Name") },
                     singleLine = true,
                     isError = nameBlank,
-                    supportingText = { if (nameBlank) Text("Required") },
+                    supportingText = if (nameBlank) { { Text("Required") } } else null,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -392,12 +392,11 @@ private fun CreateFoodDialog(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     isError = caloriesBlank || caloriesNonNumeric || caloriesNegative,
-                    supportingText = {
-                        when {
-                            caloriesBlank -> Text("Required")
-                            caloriesNonNumeric -> Text("Must be a number")
-                            caloriesNegative -> Text("Must be 0 or greater")
-                        }
+                    supportingText = when {
+                        caloriesBlank -> { { Text("Required") } }
+                        caloriesNonNumeric -> { { Text("Must be a number") } }
+                        caloriesNegative -> { { Text("Must be 0 or greater") } }
+                        else -> null
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
