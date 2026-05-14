@@ -1,0 +1,26 @@
+tracker/src/main/java/com/graydyn/tracker/ui/search/SearchScreen.kt
+  63e281fb7681c419 48,57-58,366-371,394-396
+tracker/src/main/java/com/graydyn/tracker/ui/search/SearchViewModel.kt
+  63e281fb7681c419 96-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "42e70cf148816888a2dd095c49987967142042a2",
+  "prompts": {
+    "63e281fb7681c419": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "85199839-792f-4d2d-9cdf-79da6ba9faf1",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 1866,
+      "total_deletions": 7,
+      "accepted_lines": 25133,
+      "overriden_lines": 1,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/a66c49d315623ee3e478a0c70e873820893b700a802fe441b44e731ff945c173"
+    }
+  }
+}
