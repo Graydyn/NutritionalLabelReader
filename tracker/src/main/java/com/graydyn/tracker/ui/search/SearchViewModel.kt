@@ -10,6 +10,7 @@ import com.graydyn.tracker.TrackerApplication
 import com.graydyn.tracker.data.db.TrackerDatabase
 import com.graydyn.tracker.data.model.DiaryEntry
 import com.graydyn.tracker.data.model.Food
+import com.graydyn.tracker.data.model.FoodUnitType
 import com.graydyn.tracker.data.model.MealType
 import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.data.repository.DiaryRepository
@@ -99,10 +100,15 @@ class SearchViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val food = Food(
                 name = name.trim(),
+                unitType = FoodUnitType.GRAM,
                 caloriesPer100g = calories,
                 proteinPer100g = protein,
                 fatPer100g = fat,
-                carbsPer100g = carbs
+                carbsPer100g = carbs,
+                caloriesPerItem = null,
+                proteinPerItem = null,
+                fatPerItem = null,
+                carbsPerItem = null
             )
             val id = foodRepo.add(food)
             val saved = food.copy(id = id)
