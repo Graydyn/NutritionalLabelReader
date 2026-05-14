@@ -1,0 +1,38 @@
+tracker/src/main/java/com/graydyn/tracker/ui/diary/DiaryScreen.kt
+  652b6a0e1c3e4a4f 68,80-82,464-468
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "30ce23f73fdc6e18b017c1f020feb5100bfc15aa",
+  "prompts": {
+    "1d8872a296a42e48": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e41480aa-0f55-4650-a77a-19f46ab08569",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 50367,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/8dff8ba800200dc03145580ed5c133f7e605a04d24e2ccd43f399ca0bfc9a9ab"
+    },
+    "652b6a0e1c3e4a4f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7056b3c4-1538-48c3-a88d-e74070347829",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2282,
+      "total_deletions": 584,
+      "accepted_lines": 2804,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/0b2a795622086783d8127928a999b5339461113a33d2842c5b9de45595a33158"
+    }
+  }
+}
