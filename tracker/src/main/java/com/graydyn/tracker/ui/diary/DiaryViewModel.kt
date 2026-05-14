@@ -47,6 +47,13 @@ class DiaryViewModel(
     private val db = TrackerDatabase.getInstance(application)
     private val diaryRepo = DiaryRepository(db.diaryEntryDao())
     private val goalsRepo = GoalsRepository(db.goalsDao())
+    private val foodRepo = com.graydyn.tracker.data.repository.FoodRepository(db.foodDao())
+
+    private val _scanInProgress = MutableStateFlow<Macros?>(null)
+    val scanInProgress: StateFlow<Macros?> = _scanInProgress.asStateFlow()
+
+    fun onScanResult(macros: Macros) { _scanInProgress.value = macros }
+    fun dismissScannedFoodDialog() { _scanInProgress.value = null }
 
     private val _selectedDate = MutableStateFlow(todayString())
     val selectedDate: StateFlow<String> = _selectedDate.asStateFlow()
@@ -78,22 +85,75 @@ class DiaryViewModel(
         userPreferencesRepository.proteinAndCaloriesOnly
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
-    fun logScannedEntry(macros: Macros, mealType: MealType) {
+    fun logScannedFood(
+        name: String,
+        unitType: FoodUnitType,
+        calories: Float,
+        protein: Float?,
+        fat: Float?,
+        carbs: Float?,
+        quantity: Float,
+        mealType: MealType
+    ) {
+        _scanInProgress.value = null
         viewModelScope.launch(Dispatchers.IO) {
-            val entry = DiaryEntry(
-                date = _selectedDate.value,
-                mealType = mealType,
-                label = "Scanned label",
-                sourceType = SourceType.SCANNED,
-                foodId = null,
-                unitType = FoodUnitType.GRAM,
-                grams = null,
-                count = null,
-                calories = if (macros.calories != -1) macros.calories else null,
-                protein = if (macros.protein != -1) macros.protein.toFloat() else null,
-                fat = if (macros.fat != -1) macros.fat.toFloat() else null,
-                carbs = if (macros.carbs != -1) macros.carbs.toFloat() else null
-            )
+            val food = when (unitType) {
+                FoodUnitType.GRAM -> com.graydyn.tracker.data.model.Food(
+                    name = name.trim(),
+                    unitType = FoodUnitType.GRAM,
+                    caloriesPer100g = calories,
+                    proteinPer100g = protein,
+                    fatPer100g = fat,
+                    carbsPer100g = carbs,
+                    caloriesPerItem = null,
+                    proteinPerItem = null,
+                    fatPerItem = null,
+                    carbsPerItem = null
+                )
+                FoodUnitType.ITEM -> com.graydyn.tracker.data.model.Food(
+                    name = name.trim(),
+                    unitType = FoodUnitType.ITEM,
+                    caloriesPer100g = null,
+                    proteinPer100g = null,
+                    fatPer100g = null,
+                    carbsPer100g = null,
+                    caloriesPerItem = calories,
+                    proteinPerItem = protein,
+                    fatPerItem = fat,
+                    carbsPerItem = carbs
+                )
+            }
+            val foodId = foodRepo.add(food)
+            val entry = when (unitType) {
+                FoodUnitType.GRAM -> DiaryEntry(
+                    date = _selectedDate.value,
+                    mealType = mealType,
+                    label = food.name,
+                    sourceType = SourceType.DATABASE,
+                    foodId = foodId,
+                    unitType = FoodUnitType.GRAM,
+                    grams = quantity,
+                    count = null,
+                    calories = food.caloriesPer100g?.let { (it * quantity / 100f).toInt() },
+                    protein = food.proteinPer100g?.let { it * quantity / 100f },
+                    fat = food.fatPer100g?.let { it * quantity / 100f },
+                    carbs = food.carbsPer100g?.let { it * quantity / 100f }
+                )
+                FoodUnitType.ITEM -> DiaryEntry(
+                    date = _selectedDate.value,
+                    mealType = mealType,
+                    label = food.name,
+                    sourceType = SourceType.DATABASE,
+                    foodId = foodId,
+                    unitType = FoodUnitType.ITEM,
+                    grams = null,
+                    count = quantity,
+                    calories = food.caloriesPerItem?.let { (it * quantity).toInt() },
+                    protein = food.proteinPerItem?.let { it * quantity },
+                    fat = food.fatPerItem?.let { it * quantity },
+                    carbs = food.carbsPerItem?.let { it * quantity }
+                )
+            }
             diaryRepo.insert(entry)
         }
     }

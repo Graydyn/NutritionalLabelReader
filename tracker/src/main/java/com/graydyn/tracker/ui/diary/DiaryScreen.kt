@@ -117,7 +117,7 @@ fun DiaryScreen(
                 @Suppress("DEPRECATION")
                 result.data?.getSerializableExtra("ActivityResult") as? Macros
             }
-            macros?.let { viewModel.logScannedEntry(it, scanTargetMeal) }
+            macros?.let { viewModel.onScanResult(it) }
         }
     }
 
