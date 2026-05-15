@@ -147,9 +147,8 @@ class SavedMealEditViewModel(
         }
         _saveError.value = null
         viewModelScope.launch(Dispatchers.IO) {
-            savedMealRepo.rename(current.id, current.name)
             val renumbered = list.mapIndexed { index, item -> item.copy(position = index) }
-            savedMealRepo.replaceItems(current.id, renumbered)
+            savedMealRepo.renameAndReplaceItems(current.id, current.name, renumbered)
             _saved.value = true
         }
     }

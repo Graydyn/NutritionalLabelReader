@@ -108,4 +108,14 @@ class SavedMealRepository(
     suspend fun replaceItems(savedMealId: Long, newItems: List<SavedMealItem>) {
         savedMealDao.replaceItems(savedMealId, newItems)
     }
+
+    suspend fun renameAndReplaceItems(
+        savedMealId: Long,
+        newName: String,
+        newItems: List<SavedMealItem>
+    ) = database.withTransaction {
+        val current = savedMealDao.getSavedMeal(savedMealId) ?: return@withTransaction
+        savedMealDao.updateSavedMeal(current.copy(name = newName))
+        savedMealDao.replaceItems(savedMealId, newItems)
+    }
 }
