@@ -18,6 +18,7 @@ import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.data.repository.DiaryRepository
 import com.graydyn.tracker.data.repository.FoodRepository
 import com.graydyn.tracker.data.repository.GoalsRepository
+import com.graydyn.tracker.data.repository.SavedMealRepository
 import com.graydyn.tracker.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,6 +51,39 @@ class DiaryViewModel(
     private val diaryRepo = DiaryRepository(db.diaryEntryDao())
     private val goalsRepo = GoalsRepository(db.goalsDao())
     private val foodRepo = FoodRepository(db.foodDao())
+    private val savedMealRepo = SavedMealRepository(
+        database = db,
+        savedMealDao = db.savedMealDao(),
+        diaryEntryDao = db.diaryEntryDao()
+    )
+
+    private val _saveMealRequest = MutableStateFlow<MealType?>(null)
+    val saveMealRequest: StateFlow<MealType?> = _saveMealRequest.asStateFlow()
+
+    fun openSaveMealDialog(mealType: MealType) { _saveMealRequest.value = mealType }
+    fun dismissSaveMealDialog() { _saveMealRequest.value = null }
+
+    private val _snackbarMessage = MutableStateFlow<String?>(null)
+    val snackbarMessage: StateFlow<String?> = _snackbarMessage.asStateFlow()
+    fun consumeSnackbar() { _snackbarMessage.value = null }
+
+    fun saveCurrentMealAsSavedMeal(mealType: MealType, name: String) {
+        val entries = entriesByMeal.value[mealType].orEmpty()
+        if (entries.isEmpty()) {
+            _saveMealRequest.value = null
+            return
+        }
+        _saveMealRequest.value = null
+        viewModelScope.launch(Dispatchers.IO) {
+            savedMealRepo.saveFromDiaryEntries(
+                name = name,
+                sourceMealType = mealType,
+                entries = entries,
+                nowMillis = System.currentTimeMillis()
+            )
+            _snackbarMessage.value = "Saved as '$name'"
+        }
+    }
 
     private val _scanInProgress = MutableStateFlow<Macros?>(null)
     val scanInProgress: StateFlow<Macros?> = _scanInProgress.asStateFlow()
