@@ -1,0 +1,28 @@
+tracker/src/main/java/com/graydyn/tracker/data/repository/SavedMealRepository.kt
+  d9ad8c9bd4de863a 109
+tracker/src/androidTest/java/com/graydyn/tracker/data/db/SavedMealDaoTest.kt
+  d9ad8c9bd4de863a 152
+tracker/src/main/java/com/graydyn/tracker/data/db/SavedMealDao.kt
+  d9ad8c9bd4de863a 91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "029e524a16605bb53ae025d6acea2f404ac7e729",
+  "prompts": {
+    "d9ad8c9bd4de863a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1284c63-77a5-40f4-84dd-24beae918f28",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 1929,
+      "total_deletions": 37,
+      "accepted_lines": 50444,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/b49b139270b6703446eb2239701541103dd49513963b86407ca3ffdbd3b60f26"
+    }
+  }
+}
