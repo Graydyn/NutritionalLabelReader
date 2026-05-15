@@ -88,14 +88,16 @@ fun SearchScreen(
                 title = {
                     Column {
                         Text(
-                            text = "Add Food",
+                            text = if (mode == SearchMode.LOG) "Add Food" else "Pick a food",
                             style = MaterialTheme.typography.titleLarge
                         )
-                        Text(
-                            text = mealLabel,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        if (mode == SearchMode.LOG) {
+                            Text(
+                                text = mealLabel,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 },
                 navigationIcon = {
