@@ -17,6 +17,9 @@ interface FoodDao {
     @Query("SELECT * FROM foods WHERE name LIKE '%' || :query || '%' ORDER BY name ASC LIMIT 50")
     suspend fun search(query: String): List<Food>
 
+    @Query("SELECT * FROM foods WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): Food?
+
     @Query("SELECT COUNT(*) FROM foods")
     suspend fun count(): Int
 }
