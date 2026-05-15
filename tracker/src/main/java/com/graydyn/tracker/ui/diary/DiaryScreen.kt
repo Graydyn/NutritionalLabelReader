@@ -29,12 +29,15 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.LunchDining
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -42,10 +45,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,6 +77,7 @@ import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.navigation.Route
 import com.graydyn.tracker.ui.components.MacroProgressBar
 import com.graydyn.tracker.ui.components.ScannedFoodDialog
+import com.graydyn.tracker.ui.savedmeal.SaveMealDialog
 import com.graydyn.tracker.ui.theme.MacroCalories
 import com.graydyn.tracker.ui.theme.MacroCarbs
 import com.graydyn.tracker.ui.theme.MacroFat
@@ -102,6 +109,15 @@ fun DiaryScreen(
     val goals by viewModel.goals.collectAsState()
     val proteinOnly by viewModel.proteinOnly.collectAsState()
     val scanInProgress by viewModel.scanInProgress.collectAsState()
+    val saveMealRequest by viewModel.saveMealRequest.collectAsState()
+    val snackbarMessage by viewModel.snackbarMessage.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(snackbarMessage) {
+        snackbarMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumeSnackbar()
+        }
+    }
 
     var scanTargetMeal by remember { mutableStateOf(MealType.BREAKFAST) }
 
@@ -136,6 +152,7 @@ fun DiaryScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -199,7 +216,8 @@ fun DiaryScreen(
                             navController.navigate(Route.Search.createRoute(selectedDate, mealType))
                         },
                         onScan = { launchScan(mealType) },
-                        onDelete = { viewModel.deleteEntry(it) }
+                        onDelete = { viewModel.deleteEntry(it) },
+                        onSaveAsMeal = { viewModel.openSaveMealDialog(mealType) }
                     )
                 }
             }
@@ -220,6 +238,17 @@ fun DiaryScreen(
                         mealType = scanTargetMeal
                     )
                 }
+            )
+        }
+        saveMealRequest?.let { mealType ->
+            val mealEntries = entriesByMeal[mealType].orEmpty()
+            val mealCalories = mealEntries.sumOf { it.calories ?: 0 }
+            val mealLabel = mealStyle(mealType).label
+            SaveMealDialog(
+                suggestedName = "$mealLabel – $selectedDate",
+                summary = "$mealLabel: ${mealEntries.size} item${if (mealEntries.size == 1) "" else "s"}, $mealCalories kcal",
+                onDismiss = { viewModel.dismissSaveMealDialog() },
+                onSave = { name -> viewModel.saveCurrentMealAsSavedMeal(mealType, name) }
             )
         }
     }
@@ -362,7 +391,8 @@ private fun MealCard(
     proteinOnly: Boolean,
     onAddFood: () -> Unit,
     onScan: () -> Unit,
-    onDelete: (DiaryEntry) -> Unit
+    onDelete: (DiaryEntry) -> Unit,
+    onSaveAsMeal: (() -> Unit)? = null,
 ) {
     val style = mealStyle(mealType)
     val mealCalories = entries.sumOf { it.calories ?: 0 }
@@ -403,6 +433,25 @@ private fun MealCard(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+                if (entries.isNotEmpty() && onSaveAsMeal != null) {
+                    var menuOpen by remember { mutableStateOf(false) }
+                    IconButton(onClick = { menuOpen = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Meal options",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuOpen,
+                        onDismissRequest = { menuOpen = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Save as meal") },
+                            onClick = { menuOpen = false; onSaveAsMeal() }
+                        )
+                    }
                 }
             }
 
