@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -108,12 +109,12 @@ class DiaryViewModel(
     fun expandSavedMeal(savedMealId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             val items = savedMealRepo.getItems(savedMealId)
-            _expandedSavedMealItems.value = _expandedSavedMealItems.value + (savedMealId to items)
+            _expandedSavedMealItems.update { it + (savedMealId to items) }
         }
     }
 
     fun collapseSavedMeal(savedMealId: Long) {
-        _expandedSavedMealItems.value = _expandedSavedMealItems.value - savedMealId
+        _expandedSavedMealItems.update { it - savedMealId }
     }
 
     fun applySavedMeal(savedMealId: Long, mealType: MealType) {
