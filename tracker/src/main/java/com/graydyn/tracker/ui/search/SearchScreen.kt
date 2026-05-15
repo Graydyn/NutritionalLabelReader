@@ -62,12 +62,15 @@ import com.graydyn.tracker.data.model.fat
 import com.graydyn.tracker.data.model.protein
 import com.graydyn.tracker.ui.components.CreateFoodDialog
 
+enum class SearchMode { LOG, PICK_FOR_SAVED_MEAL }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     navController: NavController,
     date: String,
     mealType: MealType,
+    mode: SearchMode = SearchMode.LOG,
     viewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory)
 ) {
     val query by viewModel.query.collectAsState()
@@ -172,8 +175,17 @@ fun SearchScreen(
                             onSelect = { viewModel.onSelectFood(food) },
                             onQuantityChange = { viewModel.onQuantityChange(it) },
                             onAdd = {
-                                if (viewModel.logEntry(date, mealType)) {
-                                    navController.popBackStack()
+                                when (mode) {
+                                    SearchMode.LOG -> {
+                                        if (viewModel.logEntry(date, mealType)) navController.popBackStack()
+                                    }
+                                    SearchMode.PICK_FOR_SAVED_MEAL -> {
+                                        val pickedFood = viewModel.selectedFood.value ?: return@FoodResultCard
+                                        val qty = viewModel.quantity.value.toFloatOrNull()?.takeIf { it > 0f } ?: return@FoodResultCard
+                                        navController.previousBackStackEntry?.savedStateHandle?.set("picked_food_id", pickedFood.id)
+                                        navController.previousBackStackEntry?.savedStateHandle?.set("picked_quantity", qty)
+                                        navController.popBackStack()
+                                    }
                                 }
                             }
                         )

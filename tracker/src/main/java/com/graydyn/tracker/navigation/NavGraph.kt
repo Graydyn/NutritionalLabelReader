@@ -9,13 +9,16 @@ import androidx.navigation.navArgument
 import com.graydyn.tracker.data.model.MealType
 import com.graydyn.tracker.ui.diary.DiaryScreen
 import com.graydyn.tracker.ui.goals.GoalsScreen
+import com.graydyn.tracker.ui.search.SearchMode
 import com.graydyn.tracker.ui.search.SearchScreen
 
 sealed class Route(val path: String) {
     object Diary : Route("diary")
     object Goals : Route("goals")
-    object Search : Route("search/{date}/{mealType}") {
+    object Search : Route("search/{date}/{mealType}?mode={mode}") {
         fun createRoute(date: String, mealType: MealType) = "search/$date/${mealType.name}"
+        fun createRouteForPick(date: String, mealType: MealType) =
+            "search/$date/${mealType.name}?mode=PICK_FOR_SAVED_MEAL"
     }
     object SavedMealEdit : Route("savedMealEdit/{id}") {
         fun createRoute(id: Long) = "savedMealEdit/$id"
@@ -35,12 +38,14 @@ fun TrackerNavHost(navController: NavHostController) {
             route = Route.Search.path,
             arguments = listOf(
                 navArgument("date") { type = NavType.StringType },
-                navArgument("mealType") { type = NavType.StringType }
+                navArgument("mealType") { type = NavType.StringType },
+                navArgument("mode") { type = NavType.StringType; defaultValue = "LOG"; nullable = false }
             )
         ) { backStackEntry ->
             val date = backStackEntry.arguments!!.getString("date")!!
             val mealType = MealType.valueOf(backStackEntry.arguments!!.getString("mealType")!!)
-            SearchScreen(navController = navController, date = date, mealType = mealType)
+            val mode = SearchMode.valueOf(backStackEntry.arguments!!.getString("mode") ?: "LOG")
+            SearchScreen(navController = navController, date = date, mealType = mealType, mode = mode)
         }
         composable(
             route = Route.SavedMealEdit.path,
