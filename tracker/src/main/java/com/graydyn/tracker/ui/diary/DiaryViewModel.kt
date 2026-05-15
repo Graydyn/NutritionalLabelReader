@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.room.withTransaction
 import com.graydyn.nutritionlib.model.Macros
 import com.graydyn.tracker.TrackerApplication
 import com.graydyn.tracker.data.db.SavedMealSummary
@@ -189,6 +190,7 @@ class DiaryViewModel(
     ) {
         _scanInProgress.value = null
         viewModelScope.launch(Dispatchers.IO) {
+            db.withTransaction {
             val food = when (unitType) {
                 FoodUnitType.GRAM -> Food(
                     name = name.trim(),
@@ -247,6 +249,7 @@ class DiaryViewModel(
                 )
             }
             diaryRepo.insert(entry)
+            }
         }
     }
 
