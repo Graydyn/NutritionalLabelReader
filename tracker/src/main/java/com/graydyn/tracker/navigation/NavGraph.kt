@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.graydyn.tracker.data.model.MealType
 import com.graydyn.tracker.ui.diary.DiaryScreen
 import com.graydyn.tracker.ui.goals.GoalsScreen
+import com.graydyn.tracker.ui.savedmeal.SavedMealEditScreen
 import com.graydyn.tracker.ui.search.SearchMode
 import com.graydyn.tracker.ui.search.SearchScreen
 
@@ -52,7 +53,7 @@ fun TrackerNavHost(navController: NavHostController) {
             arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments!!.getLong("id")
-            androidx.compose.material3.Text("Edit saved meal $id (Phase 6)")
+            SavedMealEditScreen(navController = navController, savedMealId = id)
         }
     }
 }
