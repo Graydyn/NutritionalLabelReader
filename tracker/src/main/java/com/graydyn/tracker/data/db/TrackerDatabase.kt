@@ -12,15 +12,23 @@ import com.graydyn.tracker.data.model.Food
 import com.graydyn.tracker.data.model.Goals
 
 @Database(
-    entities = [Food::class, DiaryEntry::class, Goals::class],
-    version = 2,
-    exportSchema = false
+    entities = [
+        Food::class,
+        DiaryEntry::class,
+        Goals::class,
+        com.graydyn.tracker.data.model.SavedMeal::class,
+        com.graydyn.tracker.data.model.SavedMealItem::class,
+        com.graydyn.tracker.data.model.SavedMealSlotApplication::class
+    ],
+    version = 3,
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class TrackerDatabase : RoomDatabase() {
     abstract fun foodDao(): FoodDao
     abstract fun diaryEntryDao(): DiaryEntryDao
     abstract fun goalsDao(): GoalsDao
+    abstract fun savedMealDao(): SavedMealDao
 
     companion object {
         @Volatile private var INSTANCE: TrackerDatabase? = null
@@ -38,13 +46,63 @@ abstract class TrackerDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `saved_meals` (
+                        `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                        `name` TEXT NOT NULL,
+                        `createdAt` INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `saved_meal_items` (
+                        `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                        `savedMealId` INTEGER NOT NULL,
+                        `position` INTEGER NOT NULL,
+                        `label` TEXT NOT NULL,
+                        `foodId` INTEGER,
+                        `unitType` TEXT NOT NULL,
+                        `grams` REAL,
+                        `count` REAL,
+                        `calories` INTEGER,
+                        `protein` REAL,
+                        `fat` REAL,
+                        `carbs` REAL,
+                        FOREIGN KEY(`savedMealId`) REFERENCES `saved_meals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    CREATE INDEX IF NOT EXISTS `index_saved_meal_items_savedMealId`
+                    ON `saved_meal_items` (`savedMealId`)
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `saved_meal_slot_applications` (
+                        `savedMealId` INTEGER NOT NULL,
+                        `mealType` TEXT NOT NULL,
+                        `lastAppliedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`savedMealId`, `mealType`),
+                        FOREIGN KEY(`savedMealId`) REFERENCES `saved_meals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
         fun getInstance(context: Context): TrackerDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     TrackerDatabase::class.java,
                     "tracker.db"
-                ).addMigrations(MIGRATION_1_2)
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build().also { INSTANCE = it }
             }
     }
