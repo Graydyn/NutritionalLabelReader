@@ -1,7 +1,10 @@
 package com.graydyn.tracker.data.repository
 
+import androidx.room.withTransaction
+import com.graydyn.tracker.data.db.DiaryEntryDao
 import com.graydyn.tracker.data.db.SavedMealDao
 import com.graydyn.tracker.data.db.SavedMealSummary
+import com.graydyn.tracker.data.db.TrackerDatabase
 import com.graydyn.tracker.data.model.DiaryEntry
 import com.graydyn.tracker.data.model.MealType
 import com.graydyn.tracker.data.model.SavedMeal
@@ -11,8 +14,9 @@ import com.graydyn.tracker.data.model.SourceType
 import kotlinx.coroutines.flow.Flow
 
 class SavedMealRepository(
+    private val database: TrackerDatabase,
     private val savedMealDao: SavedMealDao,
-    private val diaryEntryDao: com.graydyn.tracker.data.db.DiaryEntryDao
+    private val diaryEntryDao: DiaryEntryDao
 ) {
 
     fun observeSummariesForSlot(mealType: MealType): Flow<List<SavedMealSummary>> =
@@ -63,7 +67,7 @@ class SavedMealRepository(
         mealType: MealType,
         date: String,
         nowMillis: Long
-    ): Int {
+    ): Int = database.withTransaction {
         val items = savedMealDao.getItems(savedMealId)
         items.forEach { item ->
             val entry = DiaryEntry(
@@ -89,7 +93,7 @@ class SavedMealRepository(
                 lastAppliedAt = nowMillis
             )
         )
-        return items.size
+        items.size
     }
 
     suspend fun rename(savedMealId: Long, newName: String) {
