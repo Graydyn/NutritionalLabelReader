@@ -88,7 +88,7 @@ interface SavedMealDao {
     }
 
     @Transaction
-    suspend fun replaceItemsTransactionally(savedMealId: Long, newItems: List<SavedMealItem>) {
+    suspend fun replaceItems(savedMealId: Long, newItems: List<SavedMealItem>) {
         deleteItemsFor(savedMealId)
         insertItems(newItems)
     }

@@ -12,10 +12,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -151,7 +149,7 @@ class SavedMealDaoTest {
             nowMillis = 1L
         )
 
-        dao.replaceItemsTransactionally(
+        dao.replaceItems(
             savedMealId = id,
             newItems = listOf(
                 item(id, 0, "New A", 50),

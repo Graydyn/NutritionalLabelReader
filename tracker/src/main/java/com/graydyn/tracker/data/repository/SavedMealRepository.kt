@@ -106,6 +106,6 @@ class SavedMealRepository(
     }
 
     suspend fun replaceItems(savedMealId: Long, newItems: List<SavedMealItem>) {
-        savedMealDao.replaceItemsTransactionally(savedMealId, newItems)
+        savedMealDao.replaceItems(savedMealId, newItems)
     }
 }
