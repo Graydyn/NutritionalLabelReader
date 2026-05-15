@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.LunchDining
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -48,6 +50,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -70,6 +73,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.graydyn.nutritionlib.NutritionReaderActivity
 import com.graydyn.nutritionlib.model.Macros
+import com.graydyn.tracker.data.db.SavedMealSummary
 import com.graydyn.tracker.data.model.DiaryEntry
 import com.graydyn.tracker.data.model.FoodUnitType
 import com.graydyn.tracker.data.model.MealType
@@ -78,6 +82,7 @@ import com.graydyn.tracker.navigation.Route
 import com.graydyn.tracker.ui.components.MacroProgressBar
 import com.graydyn.tracker.ui.components.ScannedFoodDialog
 import com.graydyn.tracker.ui.savedmeal.SaveMealDialog
+import com.graydyn.tracker.ui.savedmeal.SavedMealPickerSheet
 import com.graydyn.tracker.ui.theme.MacroCalories
 import com.graydyn.tracker.ui.theme.MacroCarbs
 import com.graydyn.tracker.ui.theme.MacroFat
@@ -110,6 +115,11 @@ fun DiaryScreen(
     val proteinOnly by viewModel.proteinOnly.collectAsState()
     val scanInProgress by viewModel.scanInProgress.collectAsState()
     val saveMealRequest by viewModel.saveMealRequest.collectAsState()
+    val pickerOpenForSlot by viewModel.pickerOpenForSlot.collectAsState()
+    val pickerSummaries by viewModel.pickerSummaries.collectAsState()
+    val expandedItems by viewModel.expandedSavedMealItems.collectAsState()
+    var renameTarget by remember { mutableStateOf<SavedMealSummary?>(null) }
+    var deleteTarget by remember { mutableStateOf<SavedMealSummary?>(null) }
     val snackbarMessage by viewModel.snackbarMessage.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(snackbarMessage) {
@@ -216,6 +226,7 @@ fun DiaryScreen(
                             navController.navigate(Route.Search.createRoute(selectedDate, mealType))
                         },
                         onScan = { launchScan(mealType) },
+                        onPickSavedMeal = { viewModel.openSavedMealPicker(mealType) },
                         onDelete = { viewModel.deleteEntry(it) },
                         onSaveAsMeal = { viewModel.openSaveMealDialog(mealType) }
                     )
@@ -249,6 +260,53 @@ fun DiaryScreen(
                 summary = "$mealLabel: ${mealEntries.size} item${if (mealEntries.size == 1) "" else "s"}, $mealCalories kcal",
                 onDismiss = { viewModel.dismissSaveMealDialog() },
                 onSave = { name -> viewModel.saveCurrentMealAsSavedMeal(mealType, name) }
+            )
+        }
+        pickerOpenForSlot?.let { slot ->
+            val mealLabel = mealStyle(slot).label
+            SavedMealPickerSheet(
+                title = "$mealLabel meals",
+                summaries = pickerSummaries,
+                expandedItems = expandedItems,
+                onDismiss = { viewModel.dismissSavedMealPicker() },
+                onExpand = { viewModel.expandSavedMeal(it) },
+                onCollapse = { viewModel.collapseSavedMeal(it) },
+                onApply = { viewModel.applySavedMeal(it, slot) },
+                onEdit = { id ->
+                    navController.navigate(Route.SavedMealEdit.createRoute(id))
+                    viewModel.dismissSavedMealPicker()
+                },
+                onRename = { id -> renameTarget = pickerSummaries.firstOrNull { it.id == id } },
+                onDelete = { id -> deleteTarget = pickerSummaries.firstOrNull { it.id == id } }
+            )
+        }
+        renameTarget?.let { target ->
+            SaveMealDialog(
+                suggestedName = target.name,
+                summary = "Rename '${target.name}'",
+                onDismiss = { renameTarget = null },
+                onSave = { newName ->
+                    viewModel.renameSavedMeal(target.id, newName)
+                    renameTarget = null
+                }
+            )
+        }
+        deleteTarget?.let { target ->
+            AlertDialog(
+                onDismissRequest = { deleteTarget = null },
+                title = { Text("Delete '${target.name}'?") },
+                text = { Text("This cannot be undone.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.deleteSavedMeal(target.id)
+                            deleteTarget = null
+                        }
+                    ) { Text("Delete") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { deleteTarget = null }) { Text("Cancel") }
+                }
             )
         }
     }
@@ -391,6 +449,7 @@ private fun MealCard(
     proteinOnly: Boolean,
     onAddFood: () -> Unit,
     onScan: () -> Unit,
+    onPickSavedMeal: () -> Unit,
     onDelete: (DiaryEntry) -> Unit,
     onSaveAsMeal: (() -> Unit)? = null,
 ) {
@@ -485,6 +544,20 @@ private fun MealCard(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("Scan", style = MaterialTheme.typography.labelLarge)
+                }
+                FilledTonalButton(
+                    onClick = onPickSavedMeal,
+                    modifier = Modifier.weight(1f),
+                    shape = MaterialTheme.shapes.medium,
+                    contentPadding = PaddingValues(vertical = 10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Bookmark,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Meals", style = MaterialTheme.typography.labelLarge)
                 }
                 FilledTonalButton(
                     onClick = onAddFood,
