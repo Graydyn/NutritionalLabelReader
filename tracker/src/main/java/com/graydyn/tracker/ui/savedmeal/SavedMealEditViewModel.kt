@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SavedMealEditViewModel(
@@ -57,15 +58,17 @@ class SavedMealEditViewModel(
     fun updateQuantity(itemId: Long, newQuantity: Float) {
         if (newQuantity <= 0f) return
         viewModelScope.launch(Dispatchers.IO) {
-            _items.value = _items.value.map { item ->
-                if (item.id != itemId) item
-                else recomputeForQuantity(item, newQuantity)
+            val foodId = _items.value.firstOrNull { it.id == itemId }?.foodId
+            val food = foodId?.let { foodLookup(it) }
+            _items.update { current ->
+                current.map { item ->
+                    if (item.id != itemId) item else applyQuantityChange(item, newQuantity, food)
+                }
             }
         }
     }
 
-    private suspend fun recomputeForQuantity(item: SavedMealItem, newQty: Float): SavedMealItem {
-        val food = item.foodId?.let { foodLookup(it) }
+    private fun applyQuantityChange(item: SavedMealItem, newQty: Float, food: Food?): SavedMealItem {
         if (food != null) {
             return when (item.unitType) {
                 FoodUnitType.GRAM -> item.copy(
