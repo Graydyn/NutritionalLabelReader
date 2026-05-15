@@ -8,12 +8,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.graydyn.nutritionlib.model.Macros
 import com.graydyn.tracker.TrackerApplication
+import com.graydyn.tracker.data.db.SavedMealSummary
 import com.graydyn.tracker.data.db.TrackerDatabase
 import com.graydyn.tracker.data.model.DiaryEntry
 import com.graydyn.tracker.data.model.Food
 import com.graydyn.tracker.data.model.FoodUnitType
 import com.graydyn.tracker.data.model.Goals
 import com.graydyn.tracker.data.model.MealType
+import com.graydyn.tracker.data.model.SavedMealItem
 import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.data.repository.DiaryRepository
 import com.graydyn.tracker.data.repository.FoodRepository
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -83,6 +86,58 @@ class DiaryViewModel(
             )
             _snackbarMessage.value = "Saved as '$name'"
         }
+    }
+
+    private val _pickerOpenForSlot = MutableStateFlow<MealType?>(null)
+    val pickerOpenForSlot: StateFlow<MealType?> = _pickerOpenForSlot.asStateFlow()
+
+    fun openSavedMealPicker(mealType: MealType) { _pickerOpenForSlot.value = mealType }
+    fun dismissSavedMealPicker() { _pickerOpenForSlot.value = null }
+
+    val pickerSummaries: StateFlow<List<SavedMealSummary>> =
+        _pickerOpenForSlot
+            .flatMapLatest { meal ->
+                if (meal == null) flowOf(emptyList())
+                else savedMealRepo.observeSummariesForSlot(meal)
+            }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val _expandedSavedMealItems = MutableStateFlow<Map<Long, List<SavedMealItem>>>(emptyMap())
+    val expandedSavedMealItems: StateFlow<Map<Long, List<SavedMealItem>>> = _expandedSavedMealItems.asStateFlow()
+
+    fun expandSavedMeal(savedMealId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val items = savedMealRepo.getItems(savedMealId)
+            _expandedSavedMealItems.value = _expandedSavedMealItems.value + (savedMealId to items)
+        }
+    }
+
+    fun collapseSavedMeal(savedMealId: Long) {
+        _expandedSavedMealItems.value = _expandedSavedMealItems.value - savedMealId
+    }
+
+    fun applySavedMeal(savedMealId: Long, mealType: MealType) {
+        val date = _selectedDate.value
+        viewModelScope.launch(Dispatchers.IO) {
+            val n = savedMealRepo.applyToSlot(
+                savedMealId = savedMealId,
+                mealType = mealType,
+                date = date,
+                nowMillis = System.currentTimeMillis()
+            )
+            val mealLabel = mealType.name.lowercase().replaceFirstChar { it.uppercase() }
+            _snackbarMessage.value = "Added $n items to $mealLabel"
+        }
+        _pickerOpenForSlot.value = null
+        _expandedSavedMealItems.value = emptyMap()
+    }
+
+    fun renameSavedMeal(savedMealId: Long, newName: String) {
+        viewModelScope.launch(Dispatchers.IO) { savedMealRepo.rename(savedMealId, newName) }
+    }
+
+    fun deleteSavedMeal(savedMealId: Long) {
+        viewModelScope.launch(Dispatchers.IO) { savedMealRepo.delete(savedMealId) }
     }
 
     private val _scanInProgress = MutableStateFlow<Macros?>(null)
