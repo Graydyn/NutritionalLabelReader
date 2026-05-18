@@ -70,6 +70,12 @@ class CsvSeederTest {
     }
 
     @Test
+    fun parseLine_sixColumnFormatButMissingFoundationalCell_returnsNull() {
+        // hasFoundationalColumn = true requires 5 numeric parts; this line has only 4.
+        assertNull(CsvSeeder.parseLine(line = "Apples,52,0.3,0.2,14", hasFoundationalColumn = true))
+    }
+
+    @Test
     fun headerHasFoundationalColumn_detectsBothFormats() {
         assertTrue(
             CsvSeeder.headerHasFoundationalColumn("name,calories_kcal,protein_g,fat_g,carbs_g,foundational")
