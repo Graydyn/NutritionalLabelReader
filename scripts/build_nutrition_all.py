@@ -21,7 +21,9 @@ Output:
 from __future__ import annotations
 
 import csv
+import os
 import sys
+import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -60,11 +62,7 @@ def main() -> int:
         reader = csv.reader(fin)
         header = next(reader)
 
-        if header == BASE_HEADER:
-            has_existing_flag = False
-        elif header == NEW_HEADER:
-            has_existing_flag = True
-        else:
+        if header != BASE_HEADER and header != NEW_HEADER:
             print(
                 f"ERROR: unexpected header in nutrition_all.csv: {header!r}\n"
                 f"  expected {BASE_HEADER!r} or {NEW_HEADER!r}",
@@ -87,10 +85,24 @@ def main() -> int:
         new_row = row[:5] + ["1" if is_foundational else "0"]
         out_rows.append(new_row)
 
-    with ALL_CSV.open("w", newline="", encoding="utf-8") as fout:
-        writer = csv.writer(fout, quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(NEW_HEADER)
-        writer.writerows(out_rows)
+    # Write to a temp file in the same directory, then atomically rename.
+    # Prevents a partial 35 MB write from corrupting the committed asset if
+    # the script is interrupted mid-rewrite.
+    fd, tmp_path = tempfile.mkstemp(
+        prefix=".nutrition_all.", suffix=".csv.tmp", dir=str(ALL_CSV.parent)
+    )
+    try:
+        with os.fdopen(fd, "w", newline="", encoding="utf-8") as fout:
+            writer = csv.writer(fout, quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(NEW_HEADER)
+            writer.writerows(out_rows)
+        os.replace(tmp_path, ALL_CSV)
+    except BaseException:
+        try:
+            os.unlink(tmp_path)
+        except FileNotFoundError:
+            pass
+        raise
 
     print(f"Wrote {len(out_rows)} rows to {ALL_CSV.relative_to(REPO_ROOT)}")
     print(f"Marked foundational=1 on {matched} rows")
