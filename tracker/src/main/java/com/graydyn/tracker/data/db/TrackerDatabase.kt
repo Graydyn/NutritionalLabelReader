@@ -20,7 +20,7 @@ import com.graydyn.tracker.data.model.Goals
         com.graydyn.tracker.data.model.SavedMealItem::class,
         com.graydyn.tracker.data.model.SavedMealSlotApplication::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -96,13 +96,44 @@ abstract class TrackerDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // saved_meal_slot_applications cascades from saved_meals (FK ON DELETE CASCADE)
+                // but cascade only fires on row delete, not bulk DELETE FROM, so clear it explicitly.
+                db.execSQL("DELETE FROM saved_meal_slot_applications")
+                db.execSQL("DELETE FROM saved_meal_items")
+                db.execSQL("DELETE FROM saved_meals")
+                db.execSQL("DELETE FROM diary_entries")
+                db.execSQL("DROP TABLE foods")
+                db.execSQL(
+                    """
+                    CREATE TABLE foods (
+                        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL,
+                        unitType TEXT NOT NULL,
+                        caloriesPer100g REAL,
+                        proteinPer100g REAL,
+                        fatPer100g REAL,
+                        carbsPer100g REAL,
+                        caloriesPerItem REAL,
+                        proteinPerItem REAL,
+                        fatPerItem REAL,
+                        carbsPerItem REAL,
+                        foundational INTEGER NOT NULL DEFAULT 0,
+                        userAdded INTEGER NOT NULL DEFAULT 0
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
         fun getInstance(context: Context): TrackerDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     TrackerDatabase::class.java,
                     "tracker.db"
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build().also { INSTANCE = it }
             }
     }

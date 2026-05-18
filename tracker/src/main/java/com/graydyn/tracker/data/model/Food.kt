@@ -1,5 +1,6 @@
 package com.graydyn.tracker.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -15,7 +16,9 @@ data class Food(
     val caloriesPerItem: Float?,
     val proteinPerItem: Float?,
     val fatPerItem: Float?,
-    val carbsPerItem: Float?
+    val carbsPerItem: Float?,
+    @ColumnInfo(defaultValue = "0") val foundational: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val userAdded: Boolean = false,
 )
 
 val Food.calories: Float?
