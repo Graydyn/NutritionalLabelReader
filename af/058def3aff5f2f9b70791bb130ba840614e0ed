@@ -1,0 +1,26 @@
+tracker/src/test/java/com/graydyn/tracker/data/seed/CsvSeederTest.kt
+  dd0aa6576b32c33b 1-81
+tracker/src/main/java/com/graydyn/tracker/data/seed/CsvSeeder.kt
+  dd0aa6576b32c33b 15-16,18,25-29,32-33,35,58-65,77-79,87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "af058def3aff5f2f9b70791bb130ba840614e0ed",
+  "prompts": {
+    "dd0aa6576b32c33b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c528c29f-0d7b-45ed-82fb-0a9c1f424c40",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 1013,
+      "total_deletions": 16,
+      "accepted_lines": 3474,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/06d4acd7cbcdd1730dc8fd9bcad69b4584b26d3b2a1b03024905c176dddcca9c"
+    }
+  }
+}
