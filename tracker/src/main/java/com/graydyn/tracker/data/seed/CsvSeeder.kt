@@ -12,31 +12,36 @@ object CsvSeeder {
     suspend fun seed(context: Context, dao: FoodDao) {
         val foods = mutableListOf<Food>()
         context.assets.open("nutrition_all.csv").bufferedReader().use { reader ->
-            reader.readLine() // skip header
+            val header = reader.readLine() ?: return
+            val hasFoundational = headerHasFoundationalColumn(header)
             reader.forEachLine { line ->
-                parseLine(line)?.let { foods.add(it) }
+                parseLine(line, hasFoundational)?.let { foods.add(it) }
             }
         }
         dao.insertAll(foods)
         Log.d(TAG, "Seeded ${foods.size} foods")
     }
 
+    internal fun headerHasFoundationalColumn(header: String): Boolean {
+        val cols = header.split(",").map { it.trim().lowercase() }
+        return cols.lastOrNull() == "foundational"
+    }
+
     /**
      * Parses a CSV line that may have a quoted food name containing commas.
-     * Format: "name",calories,protein,fat,carbs  OR  name,calories,protein,fat,carbs
+     * Five-column format:  "name",calories,protein,fat,carbs
+     * Six-column format:   "name",calories,protein,fat,carbs,foundational  (0 or 1)
      */
-    private fun parseLine(line: String): Food? {
+    internal fun parseLine(line: String, hasFoundationalColumn: Boolean): Food? {
         if (line.isBlank()) return null
 
         val name: String
         val rest: String
 
         if (line.startsWith("\"")) {
-            // Quoted name: find the closing quote
             val closeQuote = line.indexOf('"', 1)
             if (closeQuote == -1) return null
             name = line.substring(1, closeQuote)
-            // rest starts after closing quote + comma
             rest = if (closeQuote + 1 < line.length && line[closeQuote + 1] == ',') {
                 line.substring(closeQuote + 2)
             } else {
@@ -50,7 +55,14 @@ object CsvSeeder {
         }
 
         val parts = rest.split(",")
-        if (parts.size < 4) return null
+        val minCols = if (hasFoundationalColumn) 5 else 4
+        if (parts.size < minCols) return null
+
+        val foundational = if (hasFoundationalColumn) {
+            parts[4].trim() == "1"
+        } else {
+            false
+        }
 
         return Food(
             name = name.trim(),
@@ -62,7 +74,9 @@ object CsvSeeder {
             caloriesPerItem = null,
             proteinPerItem = null,
             fatPerItem = null,
-            carbsPerItem = null
+            carbsPerItem = null,
+            foundational = foundational,
+            userAdded = false,
         )
     }
 
