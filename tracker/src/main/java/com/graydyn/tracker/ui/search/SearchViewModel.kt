@@ -100,7 +100,8 @@ class SearchViewModel(
                     caloriesPerItem = null,
                     proteinPerItem = null,
                     fatPerItem = null,
-                    carbsPerItem = null
+                    carbsPerItem = null,
+                    userAdded = true,
                 )
                 FoodUnitType.ITEM -> Food(
                     name = name.trim(),
@@ -112,7 +113,8 @@ class SearchViewModel(
                     caloriesPerItem = calories,
                     proteinPerItem = protein,
                     fatPerItem = fat,
-                    carbsPerItem = carbs
+                    carbsPerItem = carbs,
+                    userAdded = true,
                 )
             }
             val id = foodRepo.add(food)

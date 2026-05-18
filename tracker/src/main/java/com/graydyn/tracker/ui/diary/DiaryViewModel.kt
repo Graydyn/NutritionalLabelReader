@@ -202,7 +202,8 @@ class DiaryViewModel(
                     caloriesPerItem = null,
                     proteinPerItem = null,
                     fatPerItem = null,
-                    carbsPerItem = null
+                    carbsPerItem = null,
+                    userAdded = true,
                 )
                 FoodUnitType.ITEM -> Food(
                     name = name.trim(),
@@ -214,7 +215,8 @@ class DiaryViewModel(
                     caloriesPerItem = calories,
                     proteinPerItem = protein,
                     fatPerItem = fat,
-                    carbsPerItem = carbs
+                    carbsPerItem = carbs,
+                    userAdded = true,
                 )
             }
             val foodId = foodRepo.add(food)
