@@ -98,6 +98,8 @@ abstract class TrackerDatabase : RoomDatabase() {
 
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
+                // Wipes everything that references foods.id; goals is preserved so users keep
+                // their calorie/macro targets across the upgrade.
                 // saved_meal_slot_applications cascades from saved_meals (FK ON DELETE CASCADE)
                 // but cascade only fires on row delete, not bulk DELETE FROM, so clear it explicitly.
                 db.execSQL("DELETE FROM saved_meal_slot_applications")
