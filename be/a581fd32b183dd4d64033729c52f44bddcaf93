@@ -1,0 +1,28 @@
+tracker/schemas/com.graydyn.tracker.data.db.TrackerDatabase/4.json
+  dd0aa6576b32c33b 1-439
+tracker/src/main/java/com/graydyn/tracker/data/model/Food.kt
+  dd0aa6576b32c33b 3,19-21,34
+tracker/src/main/java/com/graydyn/tracker/data/db/TrackerDatabase.kt
+  dd0aa6576b32c33b 23,99-129,136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "bea581fd32b183dd4d64033729c52f44bddcaf93",
+  "prompts": {
+    "dd0aa6576b32c33b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c528c29f-0d7b-45ed-82fb-0a9c1f424c40",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2909,
+      "total_deletions": 55,
+      "accepted_lines": 2912,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/79c5a1ef99797a11f7f55fd30cd5167e093b07eff037daad99488a9455affccf"
+    }
+  }
+}
