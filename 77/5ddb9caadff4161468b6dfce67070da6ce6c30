@@ -1,0 +1,26 @@
+tracker/src/main/assets/nutrition_all.csv
+  dd0aa6576b32c33b 1-469047
+scripts/build_nutrition_all.py
+  dd0aa6576b32c33b 1-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "775ddb9caadff4161468b6dfce67070da6ce6c30",
+  "prompts": {
+    "dd0aa6576b32c33b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c528c29f-0d7b-45ed-82fb-0a9c1f424c40",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 471049,
+      "total_deletions": 2,
+      "accepted_lines": 472697,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/89ed8ae94c985a810601f074c6aa1610e36099d66d49cec2d3e5309031242c1d"
+    }
+  }
+}
