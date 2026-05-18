@@ -1,0 +1,24 @@
+scripts/build_nutrition_all.py
+  dd0aa6576b32c33b 24,26,65,88-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "1a14ac171b5584cc1389cccba24256855e2a9fc5",
+  "prompts": {
+    "dd0aa6576b32c33b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c528c29f-0d7b-45ed-82fb-0a9c1f424c40",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 21,
+      "total_deletions": 9,
+      "accepted_lines": 3716,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/9709a71982b488654e5c8c00d67f8730efb8509b017b76803a0b251c7cb03f84"
+    }
+  }
+}
