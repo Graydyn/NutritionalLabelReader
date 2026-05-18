@@ -1,0 +1,22 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "eb6b8134add7e1f27531d7cfdeaff4c8c3f5a77e",
+  "prompts": {
+    "dd0aa6576b32c33b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c528c29f-0d7b-45ed-82fb-0a9c1f424c40",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 1896,
+      "total_deletions": 2,
+      "accepted_lines": 3370,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/750ca77ab338cb3e10556ad296004229dae05bdb3ee6302b5efaa32b6eb1e6f2"
+    }
+  }
+}
