@@ -1,0 +1,24 @@
+tracker/src/main/java/com/graydyn/tracker/ui/components/ScannedFoodDialog.kt
+  2f54037e4264e99c 167-186
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "126980c6b1c735608214d7f541b244180054d173",
+  "prompts": {
+    "2f54037e4264e99c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "928c63b1-f9c2-41e7-865d-f099753d591c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 5676,
+      "total_deletions": 66233,
+      "accepted_lines": 6946,
+      "overriden_lines": 1,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/92df0498bbb05403fd783bac26d152459daea31c4f60852328b10b740876ccfd"
+    }
+  }
+}
