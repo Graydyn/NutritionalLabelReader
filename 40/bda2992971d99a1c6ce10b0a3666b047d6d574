@@ -1,0 +1,26 @@
+docs/superpowers/specs/2026-05-19-protein-only-ocr-mode-design.md
+  694c38b4713aa140 1-154
+docs/superpowers/plans/2026-05-19-protein-only-ocr-mode.md
+  694c38b4713aa140 1-449
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "40bda2992971d99a1c6ce10b0a3666b047d6d574",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2750,
+      "total_deletions": 66172,
+      "accepted_lines": 2752,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/c6d48d9a83c6bfc15da7a1af4cc174fb743c475bb573a357fc21e85e4ebcae74"
+    }
+  }
+}
