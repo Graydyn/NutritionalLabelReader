@@ -17,6 +17,12 @@ data class Food(
     val proteinPerItem: Float?,
     val fatPerItem: Float?,
     val carbsPerItem: Float?,
+    val caloriesPerServing: Float? = null,
+    val proteinPerServing: Float? = null,
+    val fatPerServing: Float? = null,
+    val carbsPerServing: Float? = null,
+    val gramsPerServing: Float? = null,
+    val itemsPerServing: Float? = null,
     @ColumnInfo(defaultValue = "0") val foundational: Boolean = false,
     @ColumnInfo(defaultValue = "0") val userAdded: Boolean = false,
 )
