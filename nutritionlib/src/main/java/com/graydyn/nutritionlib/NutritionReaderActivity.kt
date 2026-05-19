@@ -49,6 +49,8 @@ class NutritionReaderActivity : ComponentActivity() {
 
         proteinOnly = intent.getBooleanExtra(EXTRA_PROTEIN_ONLY, false)
         if (proteinOnly) {
+            // updateProgressUI still calls bind() on statusFat/statusCarbs even when GONE;
+            // writing into a GONE view is harmless and avoids branching the bind loop.
             viewBinding.statusFat.visibility = View.GONE
             viewBinding.statusCarbs.visibility = View.GONE
         }
@@ -188,7 +190,7 @@ class NutritionReaderActivity : ComponentActivity() {
     }
 
     companion object {
-        const val EXTRA_PROTEIN_ONLY = "protein_only"
+        const val EXTRA_PROTEIN_ONLY = "com.graydyn.nutritionlib.extra.PROTEIN_ONLY"
 
         private const val TAG = "CameraXApp"
         private const val OCR_LOGGING_ENABLED = false
