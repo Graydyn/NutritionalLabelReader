@@ -20,7 +20,7 @@ import com.graydyn.tracker.data.model.Goals
         com.graydyn.tracker.data.model.SavedMealItem::class,
         com.graydyn.tracker.data.model.SavedMealSlotApplication::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -129,13 +129,26 @@ abstract class TrackerDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE foods ADD COLUMN caloriesPerServing REAL")
+                db.execSQL("ALTER TABLE foods ADD COLUMN proteinPerServing REAL")
+                db.execSQL("ALTER TABLE foods ADD COLUMN fatPerServing REAL")
+                db.execSQL("ALTER TABLE foods ADD COLUMN carbsPerServing REAL")
+                db.execSQL("ALTER TABLE foods ADD COLUMN gramsPerServing REAL")
+                db.execSQL("ALTER TABLE foods ADD COLUMN itemsPerServing REAL")
+                db.execSQL("ALTER TABLE diary_entries ADD COLUMN servings REAL")
+                db.execSQL("ALTER TABLE saved_meal_items ADD COLUMN servings REAL")
+            }
+        }
+
         fun getInstance(context: Context): TrackerDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     TrackerDatabase::class.java,
                     "tracker.db"
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build().also { INSTANCE = it }
             }
     }
