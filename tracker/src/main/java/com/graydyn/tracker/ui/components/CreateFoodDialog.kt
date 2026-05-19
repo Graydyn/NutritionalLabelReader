@@ -1,6 +1,5 @@
 package com.graydyn.tracker.ui.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,6 +45,9 @@ fun CreateFoodDialog(
     var protein by remember { mutableStateOf("") }
     var fat by remember { mutableStateOf("") }
     var carbs by remember { mutableStateOf("") }
+    var gramsPerServing by remember { mutableStateOf("") }
+    var itemsPerServing by remember { mutableStateOf("") }
+    var missingFieldMessage by remember { mutableStateOf<String?>(null) }
 
     val nameFocusRequester = remember { FocusRequester() }
     val nameInitiallyBlank = remember { initialName.isBlank() }
@@ -87,12 +88,39 @@ fun CreateFoodDialog(
 
     fun selectUnit(next: FoodUnitType) {
         if (next == unitType) return
+        when {
+            unitType == FoodUnitType.SERVING && next == FoodUnitType.GRAM -> {
+                val gPerServing = gramsPerServing.trim().toFloatOrNull()?.takeIf { it > 0f }
+                if (gPerServing == null) {
+                    missingFieldMessage =
+                        "To switch to 'by weight', enter the weight per serving so we can convert the values."
+                    return
+                }
+                calories = perServingToPer100g(calories.trim().toFloatOrNull(), gPerServing)?.let { fmt(it) } ?: ""
+                protein = perServingToPer100g(protein.trim().toFloatOrNull(), gPerServing)?.let { fmt(it) } ?: ""
+                fat = perServingToPer100g(fat.trim().toFloatOrNull(), gPerServing)?.let { fmt(it) } ?: ""
+                carbs = perServingToPer100g(carbs.trim().toFloatOrNull(), gPerServing)?.let { fmt(it) } ?: ""
+            }
+            unitType == FoodUnitType.SERVING && next == FoodUnitType.ITEM -> {
+                val iPerServing = itemsPerServing.trim().toFloatOrNull()?.takeIf { it > 0f }
+                if (iPerServing == null) {
+                    missingFieldMessage =
+                        "To switch to 'by item', enter the items per serving so we can convert the values."
+                    return
+                }
+                calories = perServingToPerItem(calories.trim().toFloatOrNull(), iPerServing)?.let { fmt(it) } ?: ""
+                protein = perServingToPerItem(protein.trim().toFloatOrNull(), iPerServing)?.let { fmt(it) } ?: ""
+                fat = perServingToPerItem(fat.trim().toFloatOrNull(), iPerServing)?.let { fmt(it) } ?: ""
+                carbs = perServingToPerItem(carbs.trim().toFloatOrNull(), iPerServing)?.let { fmt(it) } ?: ""
+            }
+            else -> {
+                calories = ""
+                protein = ""
+                fat = ""
+                carbs = ""
+            }
+        }
         unitType = next
-        // Clear macro fields so leftover per-100g values aren't silently saved as per-item.
-        calories = ""
-        protein = ""
-        fat = ""
-        carbs = ""
     }
 
     AlertDialog(
@@ -101,30 +129,9 @@ fun CreateFoodDialog(
         text = {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { selectUnit(FoodUnitType.GRAM) },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = unitType == FoodUnitType.GRAM,
-                            onClick = { selectUnit(FoodUnitType.GRAM) }
-                        )
-                        Text("Measured by weight")
-                    }
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { selectUnit(FoodUnitType.ITEM) },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = unitType == FoodUnitType.ITEM,
-                            onClick = { selectUnit(FoodUnitType.ITEM) }
-                        )
-                        Text("Counted as items")
-                    }
+                    UnitRadio("By weight", unitType == FoodUnitType.GRAM) { selectUnit(FoodUnitType.GRAM) }
+                    UnitRadio("By item", unitType == FoodUnitType.ITEM) { selectUnit(FoodUnitType.ITEM) }
+                    UnitRadio("By serving", unitType == FoodUnitType.SERVING) { selectUnit(FoodUnitType.SERVING) }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
@@ -181,6 +188,26 @@ fun CreateFoodDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
+                if (unitType == FoodUnitType.SERVING) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = gramsPerServing,
+                        onValueChange = { gramsPerServing = it },
+                        label = { Text("Weight per serving (g, optional)") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = itemsPerServing,
+                        onValueChange = { itemsPerServing = it },
+                        label = { Text("Items per serving (optional)") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         },
         confirmButton = {
@@ -193,8 +220,8 @@ fun CreateFoodDialog(
                         protein.trim().toFloatOrNull(),
                         fat.trim().toFloatOrNull(),
                         carbs.trim().toFloatOrNull(),
-                        null,
-                        null
+                        if (unitType == FoodUnitType.SERVING) gramsPerServing.trim().toFloatOrNull() else null,
+                        if (unitType == FoodUnitType.SERVING) itemsPerServing.trim().toFloatOrNull() else null
                     )
                 },
                 enabled = canSave
@@ -204,4 +231,15 @@ fun CreateFoodDialog(
             TextButton(onClick = onDismiss) { Text("Cancel") }
         }
     )
+
+    missingFieldMessage?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { missingFieldMessage = null },
+            title = { Text("Missing serving information") },
+            text = { Text(msg) },
+            confirmButton = {
+                TextButton(onClick = { missingFieldMessage = null }) { Text("OK") }
+            }
+        )
+    }
 }
