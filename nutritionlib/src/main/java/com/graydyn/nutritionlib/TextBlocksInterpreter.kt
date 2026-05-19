@@ -6,6 +6,7 @@ import com.graydyn.nutritionlib.model.MacroDetection
 import com.graydyn.nutritionlib.model.Macros
 import com.graydyn.nutritionlib.model.OcrPassData
 import com.graydyn.nutritionlib.model.RawOcrLine
+import kotlin.math.roundToInt
 
 /**
  * The TextRecognizer returns a series of blocks of text.
@@ -15,6 +16,25 @@ import com.graydyn.nutritionlib.model.RawOcrLine
 class TextBlocksInterpreter {
     companion object {
         private val TAG = "TextBlocksInterpreter"
+
+        private val SERVING_REGEX = Regex(
+            """\b(per|pour)\b\s+.*?\(\s*(\d+(?:\.\d+)?)\s*g\s*\)""",
+            RegexOption.IGNORE_CASE
+        )
+
+        /**
+         * Detects "Per X (Yg)" / "Pour X (Yg)" serving-size phrasing in a single OCR row.
+         * Returns the grams value rounded to the nearest integer, or null if the row does
+         * not match or the value is outside the plausible 1..2000 range. Pure function;
+         * exposed as `internal` so the same module's tests can exercise it directly.
+         */
+        internal fun detectGramsPerServing(line: String): Int? {
+            val match = SERVING_REGEX.find(line) ?: return null
+            val numberStr = match.groupValues[2]
+            val value = numberStr.toDoubleOrNull()?.roundToInt() ?: return null
+            if (value !in 1..2000) return null
+            return value
+        }
 
         fun read(blocks: List<Text.TextBlock>, oldMacros: Macros): Pair<Macros, OcrPassData> {
             val lines = blocks.flatMap { it.lines }
@@ -68,6 +88,16 @@ class TextBlocksInterpreter {
                 // Strip percentage values (daily value %) so they don't interfere with number extraction
                 val lineNoPercent = Regex("""\d+\s*%""").replace(line, "")
                 val lower = lineNoPercent.lowercase()
+
+                // Opportunistic serving-size detection. Runs BEFORE macro detection so a row
+                // that has no macro keyword (and would `continue` below) still gets a chance
+                // to populate gramsPerServing.
+                if (macros.gramsPerServing == -1) {
+                    detectGramsPerServing(lineNoPercent)?.let { value ->
+                        macros.gramsPerServing = value
+                        detections.add(MacroDetection(macro = "gramsPerServing", value = value, fromLine = line))
+                    }
+                }
 
                 val macro = detectMacro(lower) ?: continue
 
