@@ -1,0 +1,26 @@
+nutritionlib/src/main/java/com/graydyn/nutritionlib/TextBlocksInterpreter.kt
+  694c38b4713aa140 9,20-38,92-101,208
+nutritionlib/src/test/java/com/graydyn/nutritionlib/TextBlocksInterpreterTest.kt
+  694c38b4713aa140 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "6c33ef4c197d98854347b1e247d2dfafeeed64d0",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2893,
+      "total_deletions": 66172,
+      "accepted_lines": 107141,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/b9c391d3ec433a691b9782adb1dd2f08ed392c47277fff46ff7508911441f295"
+    }
+  }
+}
