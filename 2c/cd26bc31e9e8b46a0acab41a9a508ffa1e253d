@@ -1,0 +1,24 @@
+tracker/src/androidTest/java/com/graydyn/tracker/ui/savedmeal/SavedMealEditViewModelTest.kt
+  2f54037e4264e99c 18,128-179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "2ccd26bc31e9e8b46a0acab41a9a508ffa1e253d",
+  "prompts": {
+    "2f54037e4264e99c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "928c63b1-f9c2-41e7-865d-f099753d591c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2933,
+      "total_deletions": 66329,
+      "accepted_lines": 4893,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/da8e59401b74fcc915e85e1dbabdda61ee8d86ea500f233f1abb8b20ab902544"
+    }
+  }
+}
