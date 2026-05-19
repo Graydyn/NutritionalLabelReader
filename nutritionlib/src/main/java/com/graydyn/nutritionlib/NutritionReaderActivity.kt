@@ -40,11 +40,18 @@ class NutritionReaderActivity : ComponentActivity() {
     private var macros = Macros()
     private lateinit var ocrPassLogger: OcrPassLogger
     private val messageHandler = Handler(Looper.getMainLooper())
+    private var proteinOnly: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityNutritionReaderBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
+        proteinOnly = intent.getBooleanExtra(EXTRA_PROTEIN_ONLY, false)
+        if (proteinOnly) {
+            viewBinding.statusFat.visibility = View.GONE
+            viewBinding.statusCarbs.visibility = View.GONE
+        }
 
         if (OCR_LOGGING_ENABLED) ocrPassLogger = OcrPassLogger(this)
         updateProgressUI(Macros())
@@ -181,6 +188,8 @@ class NutritionReaderActivity : ComponentActivity() {
     }
 
     companion object {
+        const val EXTRA_PROTEIN_ONLY = "protein_only"
+
         private const val TAG = "CameraXApp"
         private const val OCR_LOGGING_ENABLED = false
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
@@ -213,8 +222,8 @@ class NutritionReaderActivity : ComponentActivity() {
                         if (OCR_LOGGING_ENABLED) ocrPassLogger.log(passData)
                         updateProgressUI(macros)
                         Log.d(TAG, macros.toString())
-                        if (macros.isComplete()) {
-                            if (isCalorieConsistent(macros)) {
+                        if (macros.isComplete(proteinOnly)) {
+                            if (proteinOnly || isCalorieConsistent(macros)) {
                                 returnResult(macros)
                             } else {
                                 showValidationMessage("Validation failed, rescanning...")
