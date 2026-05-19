@@ -154,7 +154,10 @@ fun DiaryScreen(
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED
         ) {
-            scanLauncher.launch(Intent(context, NutritionReaderActivity::class.java))
+            val intent = Intent(context, NutritionReaderActivity::class.java).apply {
+                putExtra(NutritionReaderActivity.EXTRA_PROTEIN_ONLY, proteinOnly)
+            }
+            scanLauncher.launch(intent)
         } else {
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
