@@ -57,7 +57,7 @@ fun ScannedFoodDialog(
     var protein by remember { mutableStateOf(seed(macros.protein)) }
     var fat by remember { mutableStateOf(seed(macros.fat)) }
     var carbs by remember { mutableStateOf(seed(macros.carbs)) }
-    var gramsPerServing by remember { mutableStateOf("") }
+    var gramsPerServing by remember { mutableStateOf(seed(macros.gramsPerServing)) }
     var itemsPerServing by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("1") }
     var missingFieldMessage by remember { mutableStateOf<String?>(null) }
