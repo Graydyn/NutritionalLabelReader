@@ -164,6 +164,26 @@ fun ScannedFoodDialog(
                         .fillMaxWidth()
                         .focusRequester(nameFocusRequester)
                 )
+                if (unitType == FoodUnitType.SERVING) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = gramsPerServing,
+                        onValueChange = { gramsPerServing = it },
+                        label = { Text("Weight per serving (g, optional)") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = itemsPerServing,
+                        onValueChange = { itemsPerServing = it },
+                        label = { Text("Items per serving (optional)") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = calories,
@@ -207,26 +227,6 @@ fun ScannedFoodDialog(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (unitType == FoodUnitType.SERVING) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = gramsPerServing,
-                        onValueChange = { gramsPerServing = it },
-                        label = { Text("Weight per serving (g, optional)") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = itemsPerServing,
-                        onValueChange = { itemsPerServing = it },
-                        label = { Text("Items per serving (optional)") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = quantity,
