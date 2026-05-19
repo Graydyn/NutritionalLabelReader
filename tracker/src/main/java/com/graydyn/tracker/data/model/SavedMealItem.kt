@@ -1,5 +1,6 @@
 package com.graydyn.tracker.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -26,6 +27,7 @@ data class SavedMealItem(
     val unitType: FoodUnitType,
     val grams: Float?,
     val count: Float?,
+    @ColumnInfo(name = "servings") val servings: Float? = null,
     val calories: Int?,
     val protein: Float?,
     val fat: Float?,

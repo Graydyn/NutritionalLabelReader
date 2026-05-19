@@ -50,6 +50,7 @@ class SavedMealRepository(
                         unitType = entry.unitType,
                         grams = entry.grams,
                         count = entry.count,
+                        servings = null,
                         calories = entry.calories,
                         protein = entry.protein,
                         fat = entry.fat,
