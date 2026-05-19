@@ -2,9 +2,15 @@ package com.graydyn.nutritionlib.model
 
 import java.io.Serializable
 
-data class Macros(var calories: Int, var fat: Int, var protein: Int, var carbs: Int) : Serializable {
+data class Macros(
+    var calories: Int,
+    var fat: Int,
+    var protein: Int,
+    var carbs: Int,
+    var gramsPerServing: Int
+) : Serializable {
 
-    constructor() : this(-1, -1, -1, -1)
+    constructor() : this(-1, -1, -1, -1, -1)
 
     fun isComplete(proteinOnly: Boolean = false): Boolean {
         if (proteinOnly) return calories != -1 && protein != -1
