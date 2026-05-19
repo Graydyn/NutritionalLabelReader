@@ -1,0 +1,24 @@
+nutritionlib/src/main/java/com/graydyn/nutritionlib/model/OcrPassData.kt
+  694c38b4713aa140 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "572175d9f365c4dc4c0f4e7f888d026e3ef1b446",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2722,
+      "total_deletions": 66171,
+      "accepted_lines": 107065,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/10fb5417199b0a914bb3f4a455dd7244b53b0daa3aae8b91cdef46a0d4307c3c"
+    }
+  }
+}
