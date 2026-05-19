@@ -1,0 +1,24 @@
+nutritionlib/src/main/java/com/graydyn/nutritionlib/NutritionReaderActivity.kt
+  694c38b4713aa140 43,50-55,191-192,225-226
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "5f8cc01057658ab230404ad10cc821db2943b98d",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2760,
+      "total_deletions": 66173,
+      "accepted_lines": 2760,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/e325e5e27e8769a24ee12574f4c71e91fb165a772ab768ab9a97c33c36d27081"
+    }
+  }
+}
