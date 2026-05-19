@@ -1,0 +1,24 @@
+tracker/src/main/java/com/graydyn/tracker/ui/diary/DiaryScreen.kt
+  694c38b4713aa140 157-160
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "7c1aeff2f1872d907ac8edf44850be0e61be9ba1",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2756,
+      "total_deletions": 66175,
+      "accepted_lines": 2756,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/405f859d0add34deb730ac8ce4aea355a8f77cccf54f6aa9b638c76d2b8ef17b"
+    }
+  }
+}
