@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -123,5 +124,57 @@ class SavedMealEditViewModelTest {
         val resulting = updated!!.single()
         assertEquals(250f, resulting.grams!!, 0.001f)
         assertEquals(1000, resulting.calories)
+    }
+
+    @Test
+    fun addPickedFoodServingWritesServingItem() = runTest {
+        val food = Food(
+            id = 0, name = "ServBar", unitType = FoodUnitType.SERVING,
+            caloriesPer100g = null, proteinPer100g = null, fatPer100g = null, carbsPer100g = null,
+            caloriesPerItem = null, proteinPerItem = null, fatPerItem = null, carbsPerItem = null,
+            caloriesPerServing = 250f, proteinPerServing = 10f, fatPerServing = 12f, carbsPerServing = 30f,
+            gramsPerServing = 50f, itemsPerServing = null
+        )
+        val foodId = db.foodDao().insert(food)
+        val mealId = repo.saveFromDiaryEntries(
+            "M", MealType.BREAKFAST, listOf(gramEntry("seed", 100, foodId = null)), 1L
+        )
+        val vm = SavedMealEditViewModel(app, mealId, repo) { id -> db.foodDao().getById(id) }
+        vm.items.firstOrNull { it.isNotEmpty() }
+        vm.addPickedFood(food.copy(id = foodId), 2f)
+        val updated = vm.items.firstOrNull { list -> list.any { it.label == "ServBar" } }!!
+        val serving = updated.single { it.label == "ServBar" }
+        assertEquals(FoodUnitType.SERVING, serving.unitType)
+        assertEquals(2f, serving.servings!!, 0.001f)
+        assertEquals(500, serving.calories)
+        assertNull(serving.grams)
+        assertNull(serving.count)
+    }
+
+    @Test
+    fun updateQuantityServingRecomputesFromCatalog() = runTest {
+        val food = Food(
+            id = 0, name = "ServBar", unitType = FoodUnitType.SERVING,
+            caloriesPer100g = null, proteinPer100g = null, fatPer100g = null, carbsPer100g = null,
+            caloriesPerItem = null, proteinPerItem = null, fatPerItem = null, carbsPerItem = null,
+            caloriesPerServing = 250f, proteinPerServing = 10f, fatPerServing = 12f, carbsPerServing = 30f,
+            gramsPerServing = 50f, itemsPerServing = null
+        )
+        val foodId = db.foodDao().insert(food)
+        val seedEntry = DiaryEntry(
+            date = "2026-05-19", mealType = MealType.BREAKFAST,
+            label = "ServBar", sourceType = SourceType.DATABASE, foodId = foodId,
+            unitType = FoodUnitType.SERVING, grams = null, count = null, servings = 1f,
+            calories = 250, protein = 10f, fat = 12f, carbs = 30f
+        )
+        val mealId = repo.saveFromDiaryEntries("M", MealType.BREAKFAST, listOf(seedEntry), 1L)
+        val vm = SavedMealEditViewModel(app, mealId, repo) { id -> db.foodDao().getById(id) }
+        val initial = vm.items.firstOrNull { it.isNotEmpty() }!!
+        val itemId = initial.single().id
+        vm.updateQuantity(itemId, 3f)
+        val updated = vm.items.firstOrNull { list -> list.singleOrNull()?.calories == 750 }!!
+        val resulting = updated.single()
+        assertEquals(3f, resulting.servings!!, 0.001f)
+        assertEquals(750, resulting.calories)
     }
 }
