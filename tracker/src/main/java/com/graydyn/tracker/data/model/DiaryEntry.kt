@@ -21,6 +21,7 @@ data class DiaryEntry(
     val unitType: FoodUnitType,
     val grams: Float?,
     val count: Float?,
+    val servings: Float? = null,
     val calories: Int?,
     val protein: Float?,
     val fat: Float?,
