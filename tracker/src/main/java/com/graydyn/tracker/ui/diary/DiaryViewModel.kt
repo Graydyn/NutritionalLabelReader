@@ -185,6 +185,8 @@ class DiaryViewModel(
         protein: Float?,
         fat: Float?,
         carbs: Float?,
+        gramsPerServing: Float?,
+        itemsPerServing: Float?,
         quantity: Float,
         mealType: MealType
     ) {
@@ -218,6 +220,25 @@ class DiaryViewModel(
                     carbsPerItem = carbs,
                     userAdded = true,
                 )
+                FoodUnitType.SERVING -> Food(
+                    name = name.trim(),
+                    unitType = FoodUnitType.SERVING,
+                    caloriesPer100g = null,
+                    proteinPer100g = null,
+                    fatPer100g = null,
+                    carbsPer100g = null,
+                    caloriesPerItem = null,
+                    proteinPerItem = null,
+                    fatPerItem = null,
+                    carbsPerItem = null,
+                    caloriesPerServing = calories,
+                    proteinPerServing = protein,
+                    fatPerServing = fat,
+                    carbsPerServing = carbs,
+                    gramsPerServing = gramsPerServing,
+                    itemsPerServing = itemsPerServing,
+                    userAdded = true,
+                )
             }
             val foodId = foodRepo.add(food)
             val entry = when (unitType) {
@@ -248,6 +269,21 @@ class DiaryViewModel(
                     protein = food.proteinPerItem?.let { it * quantity },
                     fat = food.fatPerItem?.let { it * quantity },
                     carbs = food.carbsPerItem?.let { it * quantity }
+                )
+                FoodUnitType.SERVING -> DiaryEntry(
+                    date = _selectedDate.value,
+                    mealType = mealType,
+                    label = food.name,
+                    sourceType = SourceType.DATABASE,
+                    foodId = foodId,
+                    unitType = FoodUnitType.SERVING,
+                    grams = null,
+                    count = null,
+                    servings = quantity,
+                    calories = food.caloriesPerServing?.let { (it * quantity).toInt() },
+                    protein = food.proteinPerServing?.let { it * quantity },
+                    fat = food.fatPerServing?.let { it * quantity },
+                    carbs = food.carbsPerServing?.let { it * quantity }
                 )
             }
             diaryRepo.insert(entry)

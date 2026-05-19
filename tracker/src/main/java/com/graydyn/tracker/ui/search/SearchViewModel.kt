@@ -85,7 +85,9 @@ class SearchViewModel(
         calories: Float,
         protein: Float?,
         fat: Float?,
-        carbs: Float?
+        carbs: Float?,
+        gramsPerServing: Float?,
+        itemsPerServing: Float?
     ) {
         _showCreateDialog.value = false
         viewModelScope.launch(Dispatchers.IO) {
@@ -114,6 +116,25 @@ class SearchViewModel(
                     proteinPerItem = protein,
                     fatPerItem = fat,
                     carbsPerItem = carbs,
+                    userAdded = true,
+                )
+                FoodUnitType.SERVING -> Food(
+                    name = name.trim(),
+                    unitType = FoodUnitType.SERVING,
+                    caloriesPer100g = null,
+                    proteinPer100g = null,
+                    fatPer100g = null,
+                    carbsPer100g = null,
+                    caloriesPerItem = null,
+                    proteinPerItem = null,
+                    fatPerItem = null,
+                    carbsPerItem = null,
+                    caloriesPerServing = calories,
+                    proteinPerServing = protein,
+                    fatPerServing = fat,
+                    carbsPerServing = carbs,
+                    gramsPerServing = gramsPerServing,
+                    itemsPerServing = itemsPerServing,
                     userAdded = true,
                 )
             }
@@ -160,6 +181,21 @@ class SearchViewModel(
                 protein = food.proteinPerItem?.let { it * qty },
                 fat = food.fatPerItem?.let { it * qty },
                 carbs = food.carbsPerItem?.let { it * qty }
+            )
+            FoodUnitType.SERVING -> DiaryEntry(
+                date = date,
+                mealType = mealType,
+                label = food.name,
+                sourceType = SourceType.DATABASE,
+                foodId = food.id,
+                unitType = FoodUnitType.SERVING,
+                grams = null,
+                count = null,
+                servings = qty,
+                calories = food.caloriesPerServing?.let { (it * qty).toInt() },
+                protein = food.proteinPerServing?.let { it * qty },
+                fat = food.fatPerServing?.let { it * qty },
+                carbs = food.carbsPerServing?.let { it * qty }
             )
         }
         viewModelScope.launch(Dispatchers.IO) { diaryRepo.insert(entry) }

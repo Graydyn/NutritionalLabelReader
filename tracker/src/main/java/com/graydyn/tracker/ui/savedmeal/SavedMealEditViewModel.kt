@@ -85,14 +85,22 @@ class SavedMealEditViewModel(
                     fat = food.fatPerItem?.let { it * newQty },
                     carbs = food.carbsPerItem?.let { it * newQty }
                 )
+                FoodUnitType.SERVING -> item.copy(
+                    servings = newQty,
+                    calories = food.caloriesPerServing?.let { (it * newQty).toInt() },
+                    protein = food.proteinPerServing?.let { it * newQty },
+                    fat = food.fatPerServing?.let { it * newQty },
+                    carbs = food.carbsPerServing?.let { it * newQty }
+                )
             }
         }
         // Orphan: scale snapshot proportionally
-        val oldQty = (item.grams ?: item.count ?: 0f).coerceAtLeast(0.001f)
+        val oldQty = (item.grams ?: item.count ?: item.servings ?: 0f).coerceAtLeast(0.001f)
         val ratio = newQty / oldQty
         return item.copy(
             grams = item.grams?.let { newQty },
             count = item.count?.let { newQty },
+            servings = item.servings?.let { newQty },
             calories = item.calories?.let { (it * ratio).toInt() },
             protein = item.protein?.let { it * ratio },
             fat = item.fat?.let { it * ratio },
@@ -126,6 +134,18 @@ class SavedMealEditViewModel(
                 protein = food.proteinPerItem?.let { it * quantity },
                 fat = food.fatPerItem?.let { it * quantity },
                 carbs = food.carbsPerItem?.let { it * quantity }
+            )
+            FoodUnitType.SERVING -> SavedMealItem(
+                savedMealId = savedMealId,
+                position = _items.value.size,
+                label = food.name,
+                foodId = food.id,
+                unitType = FoodUnitType.SERVING,
+                grams = null, count = null, servings = quantity,
+                calories = food.caloriesPerServing?.let { (it * quantity).toInt() },
+                protein = food.proteinPerServing?.let { it * quantity },
+                fat = food.fatPerServing?.let { it * quantity },
+                carbs = food.carbsPerServing?.let { it * quantity }
             )
         }
         _items.value = _items.value + newItem

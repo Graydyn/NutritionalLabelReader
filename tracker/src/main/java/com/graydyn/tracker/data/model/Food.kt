@@ -28,13 +28,29 @@ data class Food(
 )
 
 val Food.calories: Float?
-    get() = if (unitType == FoodUnitType.ITEM) caloriesPerItem else caloriesPer100g
+    get() = when (unitType) {
+        FoodUnitType.GRAM -> caloriesPer100g
+        FoodUnitType.ITEM -> caloriesPerItem
+        FoodUnitType.SERVING -> caloriesPerServing
+    }
 
 val Food.protein: Float?
-    get() = if (unitType == FoodUnitType.ITEM) proteinPerItem else proteinPer100g
+    get() = when (unitType) {
+        FoodUnitType.GRAM -> proteinPer100g
+        FoodUnitType.ITEM -> proteinPerItem
+        FoodUnitType.SERVING -> proteinPerServing
+    }
 
 val Food.fat: Float?
-    get() = if (unitType == FoodUnitType.ITEM) fatPerItem else fatPer100g
+    get() = when (unitType) {
+        FoodUnitType.GRAM -> fatPer100g
+        FoodUnitType.ITEM -> fatPerItem
+        FoodUnitType.SERVING -> fatPerServing
+    }
 
 val Food.carbs: Float?
-    get() = if (unitType == FoodUnitType.ITEM) carbsPerItem else carbsPer100g
+    get() = when (unitType) {
+        FoodUnitType.GRAM -> carbsPer100g
+        FoodUnitType.ITEM -> carbsPerItem
+        FoodUnitType.SERVING -> carbsPerServing
+    }

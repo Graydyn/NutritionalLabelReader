@@ -47,6 +47,8 @@ fun ScannedFoodDialog(
         protein: Float?,
         fat: Float?,
         carbs: Float?,
+        gramsPerServing: Float?,
+        itemsPerServing: Float?,
         quantity: Float
     ) -> Unit
 ) {
@@ -195,6 +197,8 @@ fun ScannedFoodDialog(
                         protein.trim().toFloatOrNull(),
                         fat.trim().toFloatOrNull(),
                         carbs.trim().toFloatOrNull(),
+                        null,
+                        null,
                         parsedQuantity!!
                     )
                 },

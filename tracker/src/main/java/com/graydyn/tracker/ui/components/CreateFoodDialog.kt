@@ -36,7 +36,9 @@ fun CreateFoodDialog(
         calories: Float,
         protein: Float?,
         fat: Float?,
-        carbs: Float?
+        carbs: Float?,
+        gramsPerServing: Float?,
+        itemsPerServing: Float?
     ) -> Unit
 ) {
     var unitType by remember { mutableStateOf(FoodUnitType.GRAM) }
@@ -65,18 +67,22 @@ fun CreateFoodDialog(
     val caloriesLabel = when (unitType) {
         FoodUnitType.GRAM -> "Calories per 100 g"
         FoodUnitType.ITEM -> "Calories per item"
+        FoodUnitType.SERVING -> "Calories per serving"
     }
     val proteinLabel = when (unitType) {
         FoodUnitType.GRAM -> "Protein per 100 g (optional)"
         FoodUnitType.ITEM -> "Protein per item (optional)"
+        FoodUnitType.SERVING -> "Protein per serving (optional)"
     }
     val fatLabel = when (unitType) {
         FoodUnitType.GRAM -> "Fat per 100 g (optional)"
         FoodUnitType.ITEM -> "Fat per item (optional)"
+        FoodUnitType.SERVING -> "Fat per serving (optional)"
     }
     val carbsLabel = when (unitType) {
         FoodUnitType.GRAM -> "Carbs per 100 g (optional)"
         FoodUnitType.ITEM -> "Carbs per item (optional)"
+        FoodUnitType.SERVING -> "Carbs per serving (optional)"
     }
 
     fun selectUnit(next: FoodUnitType) {
@@ -186,7 +192,9 @@ fun CreateFoodDialog(
                         parsedCalories!!,
                         protein.trim().toFloatOrNull(),
                         fat.trim().toFloatOrNull(),
-                        carbs.trim().toFloatOrNull()
+                        carbs.trim().toFloatOrNull(),
+                        null,
+                        null
                     )
                 },
                 enabled = canSave

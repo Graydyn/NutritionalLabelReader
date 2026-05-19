@@ -237,7 +237,7 @@ fun DiaryScreen(
             ScannedFoodDialog(
                 macros = macros,
                 onDismiss = { viewModel.dismissScannedFoodDialog() },
-                onSave = { name, unitType, calories, protein, fat, carbs, quantity ->
+                onSave = { name, unitType, calories, protein, fat, carbs, gramsPerServing, itemsPerServing, quantity ->
                     viewModel.logScannedFood(
                         name = name,
                         unitType = unitType,
@@ -245,6 +245,8 @@ fun DiaryScreen(
                         protein = protein,
                         fat = fat,
                         carbs = carbs,
+                        gramsPerServing = gramsPerServing,
+                        itemsPerServing = itemsPerServing,
                         quantity = quantity,
                         mealType = scanTargetMeal
                     )
@@ -607,6 +609,9 @@ private fun DiaryEntryRow(
                         when (entry.unitType) {
                             FoodUnitType.GRAM -> entry.grams?.let { append("  ·  ${it.toInt()}g") }
                             FoodUnitType.ITEM -> entry.count?.let { append("  ·  ×${formatCount(it)}") }
+                            FoodUnitType.SERVING -> entry.servings?.let {
+                                append("  ·  ${formatCount(it)} serving${if (it == 1f) "" else "s"}")
+                            }
                         }
                     }
                 },

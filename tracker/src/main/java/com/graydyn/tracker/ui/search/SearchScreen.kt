@@ -199,8 +199,8 @@ fun SearchScreen(
             CreateFoodDialog(
                 initialName = query,
                 onDismiss = { viewModel.dismissCreateDialog() },
-                onSave = { name, unitType, calories, protein, fat, carbs ->
-                    viewModel.createFood(name, unitType, calories, protein, fat, carbs)
+                onSave = { name, unitType, calories, protein, fat, carbs, gramsPerServing, itemsPerServing ->
+                    viewModel.createFood(name, unitType, calories, protein, fat, carbs, gramsPerServing, itemsPerServing)
                 }
             )
         }
@@ -306,6 +306,7 @@ private fun FoodResultCard(
                 text = when (food.unitType) {
                     FoodUnitType.GRAM -> "per 100g"
                     FoodUnitType.ITEM -> "per item"
+                    FoodUnitType.SERVING -> "per serving"
                 },
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -330,6 +331,7 @@ private fun FoodResultCard(
                                 when (food.unitType) {
                                     FoodUnitType.GRAM -> "Grams"
                                     FoodUnitType.ITEM -> "Items"
+                                    FoodUnitType.SERVING -> "Servings"
                                 }
                             )
                         },

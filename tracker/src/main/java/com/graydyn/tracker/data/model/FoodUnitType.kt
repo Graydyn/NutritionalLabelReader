@@ -1,3 +1,3 @@
 package com.graydyn.tracker.data.model
 
-enum class FoodUnitType { GRAM, ITEM }
+enum class FoodUnitType { GRAM, ITEM, SERVING }
