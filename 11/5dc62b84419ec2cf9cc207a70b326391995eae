@@ -1,0 +1,40 @@
+nutritionlib/src/test/java/com/graydyn/nutritionlib/MacrosTest.kt
+  694c38b4713aa140 1-35
+nutritionlib/src/main/java/com/graydyn/nutritionlib/model/Macros.kt
+  694c38b4713aa140 5,7,9-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "115dc62b84419ec2cf9cc207a70b326391995eae",
+  "prompts": {
+    "2f54037e4264e99c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "928c63b1-f9c2-41e7-865d-f099753d591c",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 2146,
+      "total_deletions": 66171,
+      "accepted_lines": 6927,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/a18c51315d708c9f96daf993985fa58e7ae1717ed8f46e22ef01bb8eccefa173"
+    },
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 643,
+      "total_deletions": 6,
+      "accepted_lines": 643,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/e507697660710133a62c3c683952c3d49b1dd0d8f5cd0fb469e7acea249e4871"
+    }
+  }
+}
