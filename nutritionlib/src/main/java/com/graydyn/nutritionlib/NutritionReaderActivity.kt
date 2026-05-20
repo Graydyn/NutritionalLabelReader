@@ -56,6 +56,13 @@ class NutritionReaderActivity : ComponentActivity() {
             viewBinding.statusCarbs.visibility = View.GONE
         }
 
+        // Accept button: user opts into the current partial macros. Skips the calorie
+        // consistency check because the user has explicitly vetted the result; the
+        // downstream dialog gives them a chance to edit any field before saving.
+        viewBinding.acceptButton.setOnClickListener {
+            returnResult(macros)
+        }
+
         if (OCR_LOGGING_ENABLED) ocrPassLogger = OcrPassLogger(this)
         updateProgressUI(Macros())
 
