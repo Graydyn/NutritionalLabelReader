@@ -31,6 +31,7 @@ import com.graydyn.nutritionlib.databinding.ActivityNutritionReaderBinding
 import com.graydyn.nutritionlib.model.Macros
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.abs
 
 class NutritionReaderActivity : ComponentActivity() {
     private lateinit var cameraExecutor: ExecutorService
@@ -142,12 +143,12 @@ class NutritionReaderActivity : ComponentActivity() {
 
     private fun updateProgressUI(macros: Macros) {
         runOnUiThread {
-            fun bind(view: TextView, label: String, value: Int) {
-                if (value == -1) {
+            fun bind(view: TextView, label: String, value: Float) {
+                if (value == -1f) {
                     view.text = "○  $label"
                     view.setTextColor(Color.parseColor("#80FFFFFF"))
                 } else {
-                    view.text = "✓  $label: $value"
+                    view.text = "✓  $label: ${formatMacro(value)}"
                     view.setTextColor(Color.parseColor("#FF4CAF50"))
                 }
             }
@@ -157,6 +158,10 @@ class NutritionReaderActivity : ComponentActivity() {
             bind(viewBinding.statusProtein,  "Protein",  macros.protein)
         }
     }
+
+    private fun formatMacro(value: Float): String =
+        if (value == value.toInt().toFloat()) value.toInt().toString()
+        else "%.1f".format(value)
 
     private fun showValidationMessage(text: String) {
         runOnUiThread {
@@ -173,8 +178,8 @@ class NutritionReaderActivity : ComponentActivity() {
     // Accepts up to 20% deviation to account for rounding and fiber differences.
     private fun isCalorieConsistent(macros: Macros): Boolean {
         val expected = macros.fat * 9 + macros.carbs * 4 + macros.protein * 4
-        val allowance = macros.calories * 0.20
-        val passes = Math.abs(macros.calories - expected) <= allowance
+        val allowance = macros.calories * 0.20f
+        val passes = abs(macros.calories - expected) <= allowance
         if (!passes) {
             Log.d(TAG, "Calorie check failed: detected=${macros.calories}, " +
                     "calculated=$expected (fat=${macros.fat}*9 + carbs=${macros.carbs}*4 + protein=${macros.protein}*4)")

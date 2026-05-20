@@ -1,5 +1,6 @@
 package com.graydyn.nutritionlib
 
+import com.graydyn.nutritionlib.model.Macros
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -69,5 +70,39 @@ class TextBlocksInterpreterTest {
     fun zeroGrams_returnsNull() {
         // 0g is implausible and almost certainly an OCR misread.
         assertNull(TextBlocksInterpreter.detectGramsPerServing("Per serving (0g)"))
+    }
+
+    @Test
+    fun decimalFat_isCaptured() {
+        val (macros, _) = TextBlocksInterpreter.readTextLines(listOf("Fat 0.4g"), Macros())
+        assertEquals(0.4f, macros.fat, 0.001f)
+    }
+
+    @Test
+    fun integerFat_stillWorks() {
+        val (macros, _) = TextBlocksInterpreter.readTextLines(listOf("Fat 5g"), Macros())
+        assertEquals(5f, macros.fat, 0.001f)
+    }
+
+    @Test
+    fun caloriesWithoutGramUnit_stillWorks() {
+        val (macros, _) = TextBlocksInterpreter.readTextLines(listOf("Calories 157"), Macros())
+        assertEquals(157f, macros.calories, 0.001f)
+    }
+
+    @Test
+    fun decimalProteinAndCarbs_areCaptured() {
+        val (macros, _) = TextBlocksInterpreter.readTextLines(
+            listOf("Protein 2.5g", "Carbohydrate 13.7g"),
+            Macros()
+        )
+        assertEquals(2.5f, macros.protein, 0.001f)
+        assertEquals(13.7f, macros.carbs, 0.001f)
+    }
+
+    @Test
+    fun implausiblyLargeFat_isRejected() {
+        val (macros, _) = TextBlocksInterpreter.readTextLines(listOf("Fat 249g"), Macros())
+        assertEquals(-1f, macros.fat, 0f)
     }
 }

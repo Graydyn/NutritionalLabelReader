@@ -53,6 +53,11 @@ fun ScannedFoodDialog(
     var name by remember { mutableStateOf("") }
 
     fun seed(value: Int): String = if (value == -1) "" else value.toString()
+    fun seed(value: Float): String {
+        if (value == -1f) return ""
+        return if (value == value.toInt().toFloat()) value.toInt().toString()
+        else "%.1f".format(value)
+    }
     var calories by remember { mutableStateOf(seed(macros.calories)) }
     var protein by remember { mutableStateOf(seed(macros.protein)) }
     var fat by remember { mutableStateOf(seed(macros.fat)) }

@@ -82,7 +82,7 @@ class TextBlocksInterpreter {
             return Pair(resultMacros, passData)
         }
 
-        private fun readTextLines(lines: List<String>, macros: Macros): Pair<Macros, List<MacroDetection>> {
+        internal fun readTextLines(lines: List<String>, macros: Macros): Pair<Macros, List<MacroDetection>> {
             val detections = mutableListOf<MacroDetection>()
             for (line in lines) {
                 // Strip percentage values (daily value %) so they don't interfere with number extraction
@@ -95,7 +95,7 @@ class TextBlocksInterpreter {
                 if (macros.gramsPerServing == -1) {
                     detectGramsPerServing(lineNoPercent)?.let { value ->
                         macros.gramsPerServing = value
-                        detections.add(MacroDetection(macro = "gramsPerServing", value = value, fromLine = line))
+                        detections.add(MacroDetection(macro = "gramsPerServing", value = value.toFloat(), fromLine = line))
                     }
                 }
 
@@ -119,10 +119,10 @@ class TextBlocksInterpreter {
 
                 // Don't overwrite a value already confirmed in a prior frame
                 val alreadyFound = when (macro) {
-                    "calories" -> macros.calories != -1
-                    "fat"      -> macros.fat != -1
-                    "protein"  -> macros.protein != -1
-                    "carbs"    -> macros.carbs != -1
+                    "calories" -> macros.calories != -1f
+                    "fat"      -> macros.fat != -1f
+                    "protein"  -> macros.protein != -1f
+                    "carbs"    -> macros.carbs != -1f
                     else       -> false
                 }
                 if (alreadyFound) continue
@@ -138,8 +138,8 @@ class TextBlocksInterpreter {
                     "protein"  -> Regex("protein").find(lower)?.range?.last?.plus(1) ?: 0
                     else       -> 0
                 }
-                val match = Regex("""\d+""").find(lineNoPercent, keywordEnd) ?: continue
-                val number = match.value.toIntOrNull() ?: continue
+                val match = Regex("""\d+(?:\.\d+)?""").find(lineNoPercent, keywordEnd) ?: continue
+                val number = match.value.toFloatOrNull() ?: continue
 
                 // For gram-based macros, require a unit marker ('g' or '9' as misread 'g')
                 // immediately after the number. When 'g' is absorbed into the number ("249"
@@ -180,9 +180,9 @@ class TextBlocksInterpreter {
          * The primary OCR error this guards against: 'g' misread as '9' fuses with
          * the preceding number ("24 g" → "249"), inflating the value ~10x.
          */
-        private fun isPlausible(macro: String, value: Int): Boolean = when (macro) {
-            "calories" -> value in 0..5000
-            "fat", "carbs", "protein" -> value in 0..200
+        private fun isPlausible(macro: String, value: Float): Boolean = when (macro) {
+            "calories" -> value in 0f..5000f
+            "fat", "carbs", "protein" -> value in 0f..200f
             else -> true
         }
 
