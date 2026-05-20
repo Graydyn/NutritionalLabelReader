@@ -227,6 +227,15 @@ class NutritionReaderActivity : ComponentActivity() {
                 val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                 recognizer.process(image)
                     .addOnSuccessListener { visionText ->
+                        // Guard against a frame whose listener fires after the activity is
+                        // already finishing (common when the user taps Accept mid-scan, also
+                        // possible when the four-macro auto-complete path calls returnResult
+                        // while another frame is in-flight on the camera executor).
+                        if (isFinishing || isDestroyed) {
+                            imageProxy.close()
+                            mediaImage.close()
+                            return@addOnSuccessListener
+                        }
                         val blocks: List<Text.TextBlock> = visionText.getTextBlocks()
                         //with each analysed image, we add to our macros object
                         //that way we dont need to capture every macro in one frame
