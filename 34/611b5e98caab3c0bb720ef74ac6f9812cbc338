@@ -1,0 +1,26 @@
+docs/superpowers/specs/2026-05-20-decimal-macros-and-accept-button-design.md
+  694c38b4713aa140 1-335
+docs/superpowers/plans/2026-05-20-decimal-macros-and-accept-button.md
+  694c38b4713aa140 1-655
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "34611b5e98caab3c0bb720ef74ac6f9812cbc338",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 3039,
+      "total_deletions": 66171,
+      "accepted_lines": 107290,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/1d136f5d87228cf5fdbb250985a0a0228cc7d6af2f6d225897d512a130381f40"
+    }
+  }
+}
