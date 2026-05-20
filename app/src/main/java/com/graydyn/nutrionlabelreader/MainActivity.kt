@@ -69,10 +69,10 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.height(16.dp))
                             Text("OCR Results", fontSize = 20.sp)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Calories: ${if (m.calories != -1) m.calories else "not found"}")
-                            Text("Fat: ${if (m.fat != -1) "${m.fat}g" else "not found"}")
-                            Text("Carbs: ${if (m.carbs != -1) "${m.carbs}g" else "not found"}")
-                            Text("Protein: ${if (m.protein != -1) "${m.protein}g" else "not found"}")
+                            Text("Calories: ${if (m.calories != -1f) formatMacro(m.calories) else "not found"}")
+                            Text("Fat: ${if (m.fat != -1f) "${formatMacro(m.fat)}g" else "not found"}")
+                            Text("Carbs: ${if (m.carbs != -1f) "${formatMacro(m.carbs)}g" else "not found"}")
+                            Text("Protein: ${if (m.protein != -1f) "${formatMacro(m.protein)}g" else "not found"}")
                         }
                     }
                 }
@@ -80,3 +80,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+private fun formatMacro(value: Float): String =
+    if (value == value.toInt().toFloat()) value.toInt().toString()
+    else "%.1f".format(value)
