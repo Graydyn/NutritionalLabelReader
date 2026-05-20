@@ -1,0 +1,38 @@
+nutritionlib/src/main/java/com/graydyn/nutritionlib/NutritionReaderActivity.kt
+  694c38b4713aa140 34,146-147,151,162-165,181-182
+nutritionlib/src/test/java/com/graydyn/nutritionlib/TextBlocksInterpreterTest.kt
+  694c38b4713aa140 3,74-107
+nutritionlib/src/test/java/com/graydyn/nutritionlib/MacrosTest.kt
+  694c38b4713aa140 13-14,22-24,33,45,48,51,54-62
+nutritionlib/build.gradle.kts
+  694c38b4713aa140 29-33,91
+nutritionlib/src/main/java/com/graydyn/nutritionlib/model/Macros.kt
+  694c38b4713aa140 6-9,13,16-17
+nutritionlib/src/main/java/com/graydyn/nutritionlib/model/OcrPassData.kt
+  694c38b4713aa140 7
+tracker/src/main/java/com/graydyn/tracker/ui/components/ScannedFoodDialog.kt
+  694c38b4713aa140 56-60
+nutritionlib/src/main/java/com/graydyn/nutritionlib/TextBlocksInterpreter.kt
+  694c38b4713aa140 85,98,122-125,141-142,183-185
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "269f71392c1daa91e2a6370036d5bdd2f8df85dd",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn",
+      "messages": [],
+      "total_additions": 28430,
+      "total_deletions": 66209,
+      "accepted_lines": 28426,
+      "overriden_lines": 0,
+      "messages_url": "https://git-ai.k8s.misrv.net/cas/b25885441134d960654285b34043c77428b573182f1d37472dbfe96f27bad3d6"
+    }
+  }
+}
