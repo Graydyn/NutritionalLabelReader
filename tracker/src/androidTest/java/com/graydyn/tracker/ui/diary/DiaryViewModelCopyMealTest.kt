@@ -18,6 +18,11 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Data-layer tests for the copy-meal operation. Following the module convention
+ * (see DiaryViewModelSaveMealTest), these tests drive the repository directly
+ * via an in-memory Room database rather than constructing a real DiaryViewModel.
+ */
 @RunWith(AndroidJUnit4::class)
 class DiaryViewModelCopyMealTest {
 

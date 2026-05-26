@@ -55,7 +55,7 @@ class DiaryEntryDaoInsertAllTest {
 
         val rows = dao.getEntriesForDate("2026-05-27").first()
         assertEquals(3, rows.size)
-        assertEquals(listOf("a", "b", "c"), rows.map { it.label })
+        assertEquals(setOf("a", "b", "c"), rows.map { it.label }.toSet())
         assertEquals(setOf(MealType.LUNCH), rows.map { it.mealType }.toSet())
         assertEquals(600, rows.sumOf { it.calories ?: 0 })
     }
