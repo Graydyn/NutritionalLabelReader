@@ -87,11 +87,24 @@ import com.graydyn.tracker.ui.theme.MacroCalories
 import com.graydyn.tracker.ui.theme.MacroCarbs
 import com.graydyn.tracker.ui.theme.MacroFat
 import com.graydyn.tracker.ui.theme.MacroProtein
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 private data class MealStyle(val label: String, val icon: ImageVector, val tint: Color)
 
 private fun formatCount(c: Float): String =
     if (c == c.toInt().toFloat()) c.toInt().toString() else "%.2f".format(c).trimEnd('0').trimEnd('.')
+
+private fun nextDay(dateString: String): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    val date = sdf.parse(dateString) ?: return dateString
+    val cal = Calendar.getInstance().apply {
+        time = date
+        add(Calendar.DAY_OF_YEAR, 1)
+    }
+    return sdf.format(cal.time)
+}
 
 @Composable
 private fun mealStyle(mealType: MealType): MealStyle = when (mealType) {
@@ -115,6 +128,7 @@ fun DiaryScreen(
     val proteinOnly by viewModel.proteinOnly.collectAsState()
     val scanInProgress by viewModel.scanInProgress.collectAsState()
     val saveMealRequest by viewModel.saveMealRequest.collectAsState()
+    val copyRequest by viewModel.copyRequest.collectAsState()
     val pickerOpenForSlot by viewModel.pickerOpenForSlot.collectAsState()
     val pickerSummaries by viewModel.pickerSummaries.collectAsState()
     val expandedItems by viewModel.expandedSavedMealItems.collectAsState()
@@ -231,7 +245,8 @@ fun DiaryScreen(
                         onScan = { launchScan(mealType) },
                         onPickSavedMeal = { viewModel.openSavedMealPicker(mealType) },
                         onDelete = { viewModel.deleteEntry(it) },
-                        onSaveAsMeal = { viewModel.openSaveMealDialog(mealType) }
+                        onSaveAsMeal = { viewModel.openSaveMealDialog(mealType) },
+                        onCopyTo = { viewModel.openCopyDialog(mealType) }
                     )
                 }
             }
@@ -283,6 +298,23 @@ fun DiaryScreen(
                 },
                 onRename = { id -> renameTarget = pickerSummaries.firstOrNull { it.id == id } },
                 onDelete = { id -> deleteTarget = pickerSummaries.firstOrNull { it.id == id } }
+            )
+        }
+        copyRequest?.let { sourceMealType ->
+            val mealEntries = entriesByMeal[sourceMealType].orEmpty()
+            val mealCalories = mealEntries.sumOf { it.calories ?: 0 }
+            val sourceLabel = mealStyle(sourceMealType).label
+            CopyMealDialog(
+                sourceLabel = sourceLabel,
+                sourceDate = selectedDate,
+                sourceItemCount = mealEntries.size,
+                sourceCalories = mealCalories,
+                initialTargetDate = nextDay(selectedDate),
+                initialTargetMealType = sourceMealType,
+                onDismiss = { viewModel.dismissCopyDialog() },
+                onCopy = { targetDate, targetMealType ->
+                    viewModel.copyMeal(sourceMealType, targetDate, targetMealType)
+                }
             )
         }
         renameTarget?.let { target ->
@@ -457,6 +489,7 @@ private fun MealCard(
     onPickSavedMeal: () -> Unit,
     onDelete: (DiaryEntry) -> Unit,
     onSaveAsMeal: (() -> Unit)? = null,
+    onCopyTo: (() -> Unit)? = null,
 ) {
     val style = mealStyle(mealType)
     val mealCalories = entries.sumOf { it.calories ?: 0 }
@@ -498,7 +531,7 @@ private fun MealCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                if (entries.isNotEmpty() && onSaveAsMeal != null) {
+                if (entries.isNotEmpty() && (onSaveAsMeal != null || onCopyTo != null)) {
                     var menuOpen by remember { mutableStateOf(false) }
                     IconButton(onClick = { menuOpen = true }) {
                         Icon(
@@ -511,10 +544,18 @@ private fun MealCard(
                         expanded = menuOpen,
                         onDismissRequest = { menuOpen = false }
                     ) {
-                        DropdownMenuItem(
-                            text = { Text("Save as meal") },
-                            onClick = { menuOpen = false; onSaveAsMeal() }
-                        )
+                        if (onSaveAsMeal != null) {
+                            DropdownMenuItem(
+                                text = { Text("Save as meal") },
+                                onClick = { menuOpen = false; onSaveAsMeal() }
+                            )
+                        }
+                        if (onCopyTo != null) {
+                            DropdownMenuItem(
+                                text = { Text("Copy to...") },
+                                onClick = { menuOpen = false; onCopyTo() }
+                            )
+                        }
                     }
                 }
             }
