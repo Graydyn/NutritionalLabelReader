@@ -68,6 +68,28 @@ class DiaryViewModel(
     fun openSaveMealDialog(mealType: MealType) { _saveMealRequest.value = mealType }
     fun dismissSaveMealDialog() { _saveMealRequest.value = null }
 
+    private val _copyRequest = MutableStateFlow<MealType?>(null)
+    val copyRequest: StateFlow<MealType?> = _copyRequest.asStateFlow()
+
+    fun openCopyDialog(mealType: MealType) { _copyRequest.value = mealType }
+    fun dismissCopyDialog() { _copyRequest.value = null }
+
+    fun copyMeal(sourceMealType: MealType, targetDate: String, targetMealType: MealType) {
+        val sources = entriesByMeal.value[sourceMealType].orEmpty()
+        _copyRequest.value = null
+        if (sources.isEmpty()) return
+        val copies = sources.map {
+            it.copy(id = 0, date = targetDate, mealType = targetMealType)
+        }
+        val targetLabel = targetMealType.name.lowercase().replaceFirstChar { c -> c.uppercase() }
+        val n = copies.size
+        val noun = if (n == 1) "item" else "items"
+        viewModelScope.launch(Dispatchers.IO) {
+            db.withTransaction { diaryRepo.insertAll(copies) }
+            _snackbarMessage.value = "Copied $n $noun to $targetLabel on $targetDate"
+        }
+    }
+
     private val _snackbarMessage = MutableStateFlow<String?>(null)
     val snackbarMessage: StateFlow<String?> = _snackbarMessage.asStateFlow()
     fun consumeSnackbar() { _snackbarMessage.value = null }
