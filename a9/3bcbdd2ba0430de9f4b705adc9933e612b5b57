@@ -1,0 +1,21 @@
+tracker/src/main/java/com/graydyn/tracker/ui/diary/CopyMealDialog.kt
+  s_7aab0e9fd2e080::t_63fa17ac6830e6 5-6
+  s_7aab0e9fd2e080::t_cb953645e99e7f 87,89-90
+  s_7aab0e9fd2e080::t_983be1241ff2a6 34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "a93bcbdd2ba0430de9f4b705adc9933e612b5b57",
+  "prompts": {},
+  "sessions": {
+    "s_7aab0e9fd2e080": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "04487d9d-663a-4352-a3e2-d105b617d57a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn <gyoung@movableink.com>"
+    }
+  }
+}
