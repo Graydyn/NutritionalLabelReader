@@ -1,0 +1,25 @@
+tracker/src/main/java/com/graydyn/tracker/ui/diary/DiaryScreen.kt
+  s_7aab0e9fd2e080::t_f19c2a9ce591fb 492
+  s_7aab0e9fd2e080::t_6ee42ed8d5025e 131
+  s_7aab0e9fd2e080::t_f8d4889f1c0cf2 303-319
+  s_7aab0e9fd2e080::t_bee150d00130a6 534,547-558
+  s_7aab0e9fd2e080::t_343518268e83b1 248-249
+  s_7aab0e9fd2e080::t_96bb5f94a155a5 99-108
+  s_7aab0e9fd2e080::t_b235fb0fc8178f 90-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "7219a48cc7a753e566f0df19a12391e7d9fb344f",
+  "prompts": {},
+  "sessions": {
+    "s_7aab0e9fd2e080": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "04487d9d-663a-4352-a3e2-d105b617d57a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn <gyoung@movableink.com>"
+    }
+  }
+}
