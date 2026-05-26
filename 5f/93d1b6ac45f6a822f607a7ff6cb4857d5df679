@@ -1,0 +1,21 @@
+tracker/src/main/java/com/graydyn/tracker/ui/diary/DiaryViewModel.kt
+  s_7aab0e9fd2e080::t_6908cdc985175d 84
+tracker/src/androidTest/java/com/graydyn/tracker/ui/diary/DiaryViewModelCopyMealTest.kt
+  s_7aab0e9fd2e080::t_e34e2a9bc32aae 114-115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "5f93d1b6ac45f6a822f607a7ff6cb4857d5df679",
+  "prompts": {},
+  "sessions": {
+    "s_7aab0e9fd2e080": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "04487d9d-663a-4352-a3e2-d105b617d57a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn <gyoung@movableink.com>"
+    }
+  }
+}
