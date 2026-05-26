@@ -1,0 +1,38 @@
+tracker/src/main/java/com/graydyn/tracker/data/repository/DiaryRepository.kt
+  s_7aab0e9fd2e080::t_fa685d0a190e2c 10
+  694c38b4713aa140 1-9,11-12
+tracker/src/androidTest/java/com/graydyn/tracker/data/db/DiaryEntryDaoInsertAllTest.kt
+  s_7aab0e9fd2e080::t_c7372c685822a2 1-81
+tracker/src/main/java/com/graydyn/tracker/data/db/DiaryEntryDao.kt
+  694c38b4713aa140 1-14,18-26
+  s_7aab0e9fd2e080::t_840a7ba656f7fb 15-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "4dacf9fdacc51ffbc3ed609f593f6e2e9c97fcd2",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn <gyoung@movableink.com>",
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 106258,
+      "overriden_lines": 35
+    }
+  },
+  "sessions": {
+    "s_7aab0e9fd2e080": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "04487d9d-663a-4352-a3e2-d105b617d57a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn <gyoung@movableink.com>"
+    }
+  }
+}
