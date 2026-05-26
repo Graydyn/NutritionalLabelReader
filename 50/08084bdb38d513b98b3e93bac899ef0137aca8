@@ -1,0 +1,19 @@
+docs/superpowers/plans/2026-05-26-copy-meal.md
+  s_7aab0e9fd2e080::t_fa2ba2f2462711 1-764
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "5008084bdb38d513b98b3e93bac899ef0137aca8",
+  "prompts": {},
+  "sessions": {
+    "s_7aab0e9fd2e080": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "04487d9d-663a-4352-a3e2-d105b617d57a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn <gyoung@movableink.com>"
+    }
+  }
+}
