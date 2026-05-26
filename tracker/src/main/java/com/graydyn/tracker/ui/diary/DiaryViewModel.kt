@@ -81,7 +81,7 @@ class DiaryViewModel(
         val copies = sources.map {
             it.copy(id = 0, date = targetDate, mealType = targetMealType)
         }
-        val targetLabel = targetMealType.name.lowercase().replaceFirstChar { c -> c.uppercase() }
+        val targetLabel = targetMealType.name.lowercase().replaceFirstChar { it.uppercase() }
         val n = copies.size
         val noun = if (n == 1) "item" else "items"
         viewModelScope.launch(Dispatchers.IO) {

@@ -111,6 +111,7 @@ class DiaryViewModelCopyMealTest {
 
         val rows = repo.getEntriesForDate("2026-05-26").first()
         assertEquals(2, rows.size)
-        assertEquals(listOf("Oats", "Oats"), rows.map { it.label })
+        assertEquals(2, rows.count { it.label == "Oats" })
+        assertEquals(setOf(MealType.BREAKFAST), rows.map { it.mealType }.toSet())
     }
 }
