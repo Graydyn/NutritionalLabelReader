@@ -1,0 +1,33 @@
+docs/superpowers/specs/2026-05-26-copy-meal-design.md
+  s_7aab0e9fd2e080::t_428c58bb4bee01 1-160,162-180
+  s_7aab0e9fd2e080::t_8073d458ba1341 161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "b008e7511687d98ea94605f1cfaac4811158037c",
+  "prompts": {
+    "694c38b4713aa140": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f55b0647-0e6d-4f17-b670-4c01c18d1df0",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn <gyoung@movableink.com>",
+      "total_additions": 2052,
+      "total_deletions": 66174,
+      "accepted_lines": 106300,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_7aab0e9fd2e080": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "04487d9d-663a-4352-a3e2-d105b617d57a",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Graydyn <gyoung@movableink.com>"
+    }
+  }
+}
