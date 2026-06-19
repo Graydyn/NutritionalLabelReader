@@ -3,7 +3,39 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- "Forklift" mark: a dinner fork (food) whose tines double as a forklift's lifting forks.
+         White on the green adaptive-icon background. Centered in the ~36..72 safe zone. -->
+
+    <!-- Fork tines -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,30c-9,0 -16,7 -16,16v20c0,2 1.5,4 4,4h24c2.5,0 4,-2 4,-4V46C70,37 63,30 54,30zM50,40h8v8h-8zM50,52h8v8h-8z" />
+        android:pathData="M44,34 h4 v17 h-4 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52,34 h4 v17 h-4 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,34 h4 v17 h-4 z" />
+
+    <!-- Neck / bowl joining the tines, tapering into the handle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42,51
+            h24
+            a4,4 0 0 1 4,4
+            v4
+            a16,12 0 0 1 -12,12
+            h-2
+            v-20
+            h-4
+            v20
+            h-2
+            a16,12 0 0 1 -12,-12
+            v-4
+            a4,4 0 0 1 4,-4 z" />
+
+    <!-- Handle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M51,70 h6 v8 a3,3 0 0 1 -6,0 z" />
 </vector>
