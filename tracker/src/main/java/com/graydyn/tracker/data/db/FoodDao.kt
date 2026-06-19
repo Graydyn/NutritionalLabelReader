@@ -19,6 +19,7 @@ interface FoodDao {
         SELECT * FROM foods
         WHERE name LIKE '%' || :query || '%'
         ORDER BY
+          CASE WHEN lastAmount IS NOT NULL THEN 0 ELSE 1 END,
           CASE WHEN foundational = 1 OR userAdded = 1 THEN 0 ELSE 1 END,
           CASE
             WHEN name LIKE :query || '%' THEN 0
