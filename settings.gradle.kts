@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "NutrionLabelReader"
 include(":app")
 include(":nutritionlib")
+include(":tracker")
