@@ -16,6 +16,7 @@ import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.data.repository.DiaryRepository
 import com.graydyn.tracker.data.repository.FoodRepository
 import com.graydyn.tracker.data.repository.UserPreferencesRepository
+import com.graydyn.tracker.ui.components.formatAmount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -68,7 +69,10 @@ class SearchViewModel(
 
     fun onSelectFood(food: Food) {
         _selectedFood.value = food
-        _quantity.value = ""
+        _quantity.value = food.lastAmount
+            ?.takeIf { it > 0f }
+            ?.let { formatAmount(it) }
+            ?: ""
     }
 
     fun onQuantityChange(q: String) { _quantity.value = q }
@@ -198,7 +202,10 @@ class SearchViewModel(
                 carbs = food.carbsPerServing?.let { it * qty }
             )
         }
-        viewModelScope.launch(Dispatchers.IO) { diaryRepo.insert(entry) }
+        viewModelScope.launch(Dispatchers.IO) {
+            diaryRepo.insert(entry)
+            foodRepo.updateLastAmount(food.id, qty)
+        }
         return true
     }
 
