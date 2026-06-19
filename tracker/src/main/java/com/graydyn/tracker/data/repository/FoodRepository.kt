@@ -9,4 +9,7 @@ class FoodRepository(private val dao: FoodDao) {
     suspend fun getById(id: Long): Food? = dao.getById(id)
 
     suspend fun add(food: Food): Long = dao.insert(food)
+
+    suspend fun updateLastAmount(id: Long, amount: Float) =
+        dao.updateLastAmount(id, amount)
 }

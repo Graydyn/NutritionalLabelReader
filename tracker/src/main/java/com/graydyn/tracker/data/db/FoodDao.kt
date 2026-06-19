@@ -34,6 +34,9 @@ interface FoodDao {
     @Query("SELECT * FROM foods WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): Food?
 
+    @Query("UPDATE foods SET lastAmount = :amount WHERE id = :id")
+    suspend fun updateLastAmount(id: Long, amount: Float)
+
     @Query("SELECT COUNT(*) FROM foods")
     suspend fun count(): Int
 }
