@@ -20,7 +20,7 @@ import com.graydyn.tracker.data.model.Goals
         com.graydyn.tracker.data.model.SavedMealItem::class,
         com.graydyn.tracker.data.model.SavedMealSlotApplication::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -142,13 +142,19 @@ abstract class TrackerDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE foods ADD COLUMN lastAmount REAL")
+            }
+        }
+
         fun getInstance(context: Context): TrackerDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     TrackerDatabase::class.java,
                     "tracker.db"
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     .build().also { INSTANCE = it }
             }
     }

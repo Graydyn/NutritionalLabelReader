@@ -23,6 +23,7 @@ data class Food(
     val carbsPerServing: Float? = null,
     val gramsPerServing: Float? = null,
     val itemsPerServing: Float? = null,
+    val lastAmount: Float? = null,
     @ColumnInfo(defaultValue = "0") val foundational: Boolean = false,
     @ColumnInfo(defaultValue = "0") val userAdded: Boolean = false,
 )
