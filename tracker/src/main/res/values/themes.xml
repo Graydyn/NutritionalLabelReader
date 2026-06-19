@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Tracker" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Launch/window theme shown before Compose draws. Background matches the Compose
+         surface (#FBFDF7) so there's no grey flash on cold start. -->
+    <style name="Theme.Tracker" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:statusBarColor">@color/status_bar</item>
+    </style>
 </resources>
