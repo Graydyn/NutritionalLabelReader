@@ -3,39 +3,27 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- "Forklift" mark: a dinner fork (food) whose tines double as a forklift's lifting forks.
-         White on the green adaptive-icon background. Centered in the ~36..72 safe zone. -->
+    <!-- A simple dinner fork: three tines, a head joining them, and a straight handle.
+         White on the green adaptive-icon background, centered in the ~36..72 safe zone. -->
 
-    <!-- Fork tines -->
+    <!-- Three tines (rounded tops) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M44,34 h4 v17 h-4 z" />
+        android:pathData="M45,36 h3 v16 h-3 z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M52,34 h4 v17 h-4 z" />
+        android:pathData="M52.5,36 h3 v16 h-3 z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M60,34 h4 v17 h-4 z" />
+        android:pathData="M60,36 h3 v16 h-3 z" />
 
-    <!-- Neck / bowl joining the tines, tapering into the handle -->
+    <!-- Head: the bar the tines sit on -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M42,51
-            h24
-            a4,4 0 0 1 4,4
-            v4
-            a16,12 0 0 1 -12,12
-            h-2
-            v-20
-            h-4
-            v20
-            h-2
-            a16,12 0 0 1 -12,-12
-            v-4
-            a4,4 0 0 1 4,-4 z" />
+        android:pathData="M43,52 h22 v5 a4,4 0 0 1 -4,4 h-14 a4,4 0 0 1 -4,-4 z" />
 
-    <!-- Handle -->
+    <!-- Handle: straight neck down to a rounded tip -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M51,70 h6 v8 a3,3 0 0 1 -6,0 z" />
+        android:pathData="M51,61 h6 v17 a3,3 0 0 1 -6,0 z" />
 </vector>
