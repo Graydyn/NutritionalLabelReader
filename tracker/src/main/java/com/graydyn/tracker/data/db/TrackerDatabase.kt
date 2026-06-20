@@ -10,6 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.graydyn.tracker.data.model.DiaryEntry
 import com.graydyn.tracker.data.model.Food
 import com.graydyn.tracker.data.model.Goals
+import com.graydyn.tracker.data.model.WeightEntry
 
 @Database(
     entities = [
@@ -18,9 +19,10 @@ import com.graydyn.tracker.data.model.Goals
         Goals::class,
         com.graydyn.tracker.data.model.SavedMeal::class,
         com.graydyn.tracker.data.model.SavedMealItem::class,
-        com.graydyn.tracker.data.model.SavedMealSlotApplication::class
+        com.graydyn.tracker.data.model.SavedMealSlotApplication::class,
+        WeightEntry::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -29,6 +31,7 @@ abstract class TrackerDatabase : RoomDatabase() {
     abstract fun diaryEntryDao(): DiaryEntryDao
     abstract fun goalsDao(): GoalsDao
     abstract fun savedMealDao(): SavedMealDao
+    abstract fun weightEntryDao(): WeightEntryDao
 
     companion object {
         @Volatile private var INSTANCE: TrackerDatabase? = null
@@ -148,13 +151,26 @@ abstract class TrackerDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `weight_entries` (
+                        `date` TEXT NOT NULL PRIMARY KEY,
+                        `weightLbs` REAL NOT NULL
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
         fun getInstance(context: Context): TrackerDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     TrackerDatabase::class.java,
                     "tracker.db"
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                     .build().also { INSTANCE = it }
             }
     }

@@ -1,0 +1,519 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "b484313bd6978d9507b6d4efd350f292",
+    "entities": [
+      {
+        "tableName": "foods",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `unitType` TEXT NOT NULL, `caloriesPer100g` REAL, `proteinPer100g` REAL, `fatPer100g` REAL, `carbsPer100g` REAL, `caloriesPerItem` REAL, `proteinPerItem` REAL, `fatPerItem` REAL, `carbsPerItem` REAL, `caloriesPerServing` REAL, `proteinPerServing` REAL, `fatPerServing` REAL, `carbsPerServing` REAL, `gramsPerServing` REAL, `itemsPerServing` REAL, `lastAmount` REAL, `foundational` INTEGER NOT NULL DEFAULT 0, `userAdded` INTEGER NOT NULL DEFAULT 0)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unitType",
+            "columnName": "unitType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caloriesPer100g",
+            "columnName": "caloriesPer100g",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "proteinPer100g",
+            "columnName": "proteinPer100g",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fatPer100g",
+            "columnName": "fatPer100g",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "carbsPer100g",
+            "columnName": "carbsPer100g",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "caloriesPerItem",
+            "columnName": "caloriesPerItem",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "proteinPerItem",
+            "columnName": "proteinPerItem",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fatPerItem",
+            "columnName": "fatPerItem",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "carbsPerItem",
+            "columnName": "carbsPerItem",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "caloriesPerServing",
+            "columnName": "caloriesPerServing",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "proteinPerServing",
+            "columnName": "proteinPerServing",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fatPerServing",
+            "columnName": "fatPerServing",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "carbsPerServing",
+            "columnName": "carbsPerServing",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "gramsPerServing",
+            "columnName": "gramsPerServing",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "itemsPerServing",
+            "columnName": "itemsPerServing",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastAmount",
+            "columnName": "lastAmount",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "foundational",
+            "columnName": "foundational",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "userAdded",
+            "columnName": "userAdded",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "diary_entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `mealType` TEXT NOT NULL, `label` TEXT NOT NULL, `sourceType` TEXT NOT NULL, `foodId` INTEGER, `unitType` TEXT NOT NULL, `grams` REAL, `count` REAL, `servings` REAL, `calories` INTEGER, `protein` REAL, `fat` REAL, `carbs` REAL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mealType",
+            "columnName": "mealType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceType",
+            "columnName": "sourceType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "foodId",
+            "columnName": "foodId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "unitType",
+            "columnName": "unitType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "grams",
+            "columnName": "grams",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "count",
+            "columnName": "count",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "servings",
+            "columnName": "servings",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "calories",
+            "columnName": "calories",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "protein",
+            "columnName": "protein",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fat",
+            "columnName": "fat",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "carbs",
+            "columnName": "carbs",
+            "affinity": "REAL",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_diary_entries_date",
+            "unique": false,
+            "columnNames": [
+              "date"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_diary_entries_date` ON `${TABLE_NAME}` (`date`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "goals",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `caloriesGoal` INTEGER NOT NULL, `proteinGoal` INTEGER NOT NULL, `fatGoal` INTEGER NOT NULL, `carbsGoal` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "caloriesGoal",
+            "columnName": "caloriesGoal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "proteinGoal",
+            "columnName": "proteinGoal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fatGoal",
+            "columnName": "fatGoal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "carbsGoal",
+            "columnName": "carbsGoal",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "saved_meals",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "saved_meal_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `savedMealId` INTEGER NOT NULL, `position` INTEGER NOT NULL, `label` TEXT NOT NULL, `foodId` INTEGER, `unitType` TEXT NOT NULL, `grams` REAL, `count` REAL, `servings` REAL, `calories` INTEGER, `protein` REAL, `fat` REAL, `carbs` REAL, FOREIGN KEY(`savedMealId`) REFERENCES `saved_meals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedMealId",
+            "columnName": "savedMealId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "foodId",
+            "columnName": "foodId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "unitType",
+            "columnName": "unitType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "grams",
+            "columnName": "grams",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "count",
+            "columnName": "count",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "servings",
+            "columnName": "servings",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "calories",
+            "columnName": "calories",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "protein",
+            "columnName": "protein",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fat",
+            "columnName": "fat",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "carbs",
+            "columnName": "carbs",
+            "affinity": "REAL",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_saved_meal_items_savedMealId",
+            "unique": false,
+            "columnNames": [
+              "savedMealId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_saved_meal_items_savedMealId` ON `${TABLE_NAME}` (`savedMealId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "saved_meals",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "savedMealId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "saved_meal_slot_applications",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`savedMealId` INTEGER NOT NULL, `mealType` TEXT NOT NULL, `lastAppliedAt` INTEGER NOT NULL, PRIMARY KEY(`savedMealId`, `mealType`), FOREIGN KEY(`savedMealId`) REFERENCES `saved_meals`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "savedMealId",
+            "columnName": "savedMealId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mealType",
+            "columnName": "mealType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastAppliedAt",
+            "columnName": "lastAppliedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "savedMealId",
+            "mealType"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "saved_meals",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "savedMealId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "weight_entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `weightLbs` REAL NOT NULL, PRIMARY KEY(`date`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weightLbs",
+            "columnName": "weightLbs",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "date"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b484313bd6978d9507b6d4efd350f292')"
+    ]
+  }
+}
