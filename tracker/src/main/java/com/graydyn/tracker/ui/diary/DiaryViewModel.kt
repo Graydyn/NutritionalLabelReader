@@ -23,6 +23,7 @@ import com.graydyn.tracker.data.repository.FoodRepository
 import com.graydyn.tracker.data.repository.GoalsRepository
 import com.graydyn.tracker.data.repository.SavedMealRepository
 import com.graydyn.tracker.data.repository.UserPreferencesRepository
+import com.graydyn.tracker.data.repository.WeightRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,6 +62,7 @@ class DiaryViewModel(
         savedMealDao = db.savedMealDao(),
         diaryEntryDao = db.diaryEntryDao()
     )
+    private val weightRepo = WeightRepository(db.weightEntryDao())
 
     private val _saveMealRequest = MutableStateFlow<MealType?>(null)
     val saveMealRequest: StateFlow<MealType?> = _saveMealRequest.asStateFlow()
@@ -200,6 +202,12 @@ class DiaryViewModel(
         userPreferencesRepository.proteinAndCaloriesOnly
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val effectiveWeight: StateFlow<Float?> =
+        _selectedDate
+            .flatMapLatest { date -> weightRepo.observeEffectiveWeight(date) }
+            .map { it?.weightLbs }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
     fun logScannedFood(
         name: String,
         unitType: FoodUnitType,
@@ -315,6 +323,11 @@ class DiaryViewModel(
 
     fun deleteEntry(entry: DiaryEntry) {
         viewModelScope.launch(Dispatchers.IO) { diaryRepo.delete(entry) }
+    }
+
+    fun setWeight(lbs: Float) {
+        val date = _selectedDate.value
+        viewModelScope.launch(Dispatchers.IO) { weightRepo.setWeight(date, lbs) }
     }
 
     fun navigateDate(daysOffset: Int) {
