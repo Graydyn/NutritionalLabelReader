@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -81,6 +82,8 @@ import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.navigation.Route
 import com.graydyn.tracker.ui.components.MacroProgressBar
 import com.graydyn.tracker.ui.components.ScannedFoodDialog
+import com.graydyn.tracker.ui.components.WeightDialog
+import com.graydyn.tracker.ui.components.formatAmount
 import com.graydyn.tracker.ui.savedmeal.SaveMealDialog
 import com.graydyn.tracker.ui.savedmeal.SavedMealPickerSheet
 import com.graydyn.tracker.ui.theme.MacroCalories
@@ -132,6 +135,8 @@ fun DiaryScreen(
     val pickerOpenForSlot by viewModel.pickerOpenForSlot.collectAsState()
     val pickerSummaries by viewModel.pickerSummaries.collectAsState()
     val expandedItems by viewModel.expandedSavedMealItems.collectAsState()
+    val effectiveWeight by viewModel.effectiveWeight.collectAsState()
+    var weightDialogOpen by remember { mutableStateOf(false) }
     var renameTarget by remember { mutableStateOf<SavedMealSummary?>(null) }
     var deleteTarget by remember { mutableStateOf<SavedMealSummary?>(null) }
     val snackbarMessage by viewModel.snackbarMessage.collectAsState()
@@ -229,7 +234,9 @@ fun DiaryScreen(
                     protein = dailyTotals.protein,
                     fat = dailyTotals.fat,
                     carbs = dailyTotals.carbs,
-                    proteinOnly = proteinOnly
+                    proteinOnly = proteinOnly,
+                    weightLbs = effectiveWeight,
+                    onEditWeight = { weightDialogOpen = true }
                 )
             }
 
@@ -328,6 +335,16 @@ fun DiaryScreen(
                 }
             )
         }
+        if (weightDialogOpen) {
+            WeightDialog(
+                currentLbs = effectiveWeight,
+                onDismiss = { weightDialogOpen = false },
+                onSave = { lbs ->
+                    viewModel.setWeight(lbs)
+                    weightDialogOpen = false
+                }
+            )
+        }
         deleteTarget?.let { target ->
             AlertDialog(
                 onDismissRequest = { deleteTarget = null },
@@ -416,7 +433,9 @@ private fun SummaryCard(
     protein: Float,
     fat: Float,
     carbs: Float,
-    proteinOnly: Boolean
+    proteinOnly: Boolean,
+    weightLbs: Float?,
+    onEditWeight: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -473,6 +492,26 @@ private fun SummaryCard(
                     current = carbs,
                     goal = carbsGoal,
                     color = MacroCarbs
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onEditWeight),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Weight",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = weightLbs?.let { "${formatAmount(it)} lbs" } ?: "Add weight",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (weightLbs != null) MaterialTheme.colorScheme.onSurface
+                            else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
