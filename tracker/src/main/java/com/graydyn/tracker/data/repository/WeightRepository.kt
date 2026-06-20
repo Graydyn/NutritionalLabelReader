@@ -10,6 +10,9 @@ class WeightRepository(
     fun observeEffectiveWeight(date: String): Flow<WeightEntry?> =
         dao.observeEffectiveWeight(date)
 
+    fun getWeightsInRange(start: String, end: String): Flow<List<WeightEntry>> =
+        dao.getWeightsInRange(start, end)
+
     suspend fun setWeight(date: String, weightLbs: Float) =
         dao.upsert(WeightEntry(date, weightLbs))
 }

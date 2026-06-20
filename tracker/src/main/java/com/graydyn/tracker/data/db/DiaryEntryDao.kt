@@ -21,6 +21,12 @@ interface DiaryEntryDao {
     @Query("SELECT * FROM diary_entries WHERE date = :date ORDER BY mealType ASC")
     fun getEntriesForDate(date: String): Flow<List<DiaryEntry>>
 
+    @Query(
+        "SELECT date AS date, SUM(calories) AS total FROM diary_entries " +
+            "WHERE date BETWEEN :start AND :end GROUP BY date"
+    )
+    fun getDailyCalorieTotals(start: String, end: String): Flow<List<DailyCalorieTotal>>
+
     @Query("DELETE FROM diary_entries WHERE id = :id")
     suspend fun deleteById(id: Long)
 }
