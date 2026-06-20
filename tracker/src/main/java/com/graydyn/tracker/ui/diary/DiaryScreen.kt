@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -194,6 +195,13 @@ fun DiaryScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = { navController.navigate(Route.Stats.path) }) {
+                        Icon(
+                            Icons.Default.ShowChart,
+                            contentDescription = "Statistics",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     IconButton(onClick = { navController.navigate(Route.Goals.path) }) {
                         Icon(
                             Icons.Default.Settings,

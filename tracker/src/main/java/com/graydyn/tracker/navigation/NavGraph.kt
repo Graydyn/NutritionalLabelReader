@@ -12,10 +12,12 @@ import com.graydyn.tracker.ui.goals.GoalsScreen
 import com.graydyn.tracker.ui.savedmeal.SavedMealEditScreen
 import com.graydyn.tracker.ui.search.SearchMode
 import com.graydyn.tracker.ui.search.SearchScreen
+import com.graydyn.tracker.ui.stats.StatsScreen
 
 sealed class Route(val path: String) {
     object Diary : Route("diary")
     object Goals : Route("goals")
+    object Stats : Route("stats")
     object Search : Route("search/{date}/{mealType}?mode={mode}") {
         fun createRoute(date: String, mealType: MealType) = "search/$date/${mealType.name}"
         fun createRouteForPick(date: String, mealType: MealType) =
@@ -34,6 +36,9 @@ fun TrackerNavHost(navController: NavHostController) {
         }
         composable(Route.Goals.path) {
             GoalsScreen(navController = navController)
+        }
+        composable(Route.Stats.path) {
+            StatsScreen(navController = navController)
         }
         composable(
             route = Route.Search.path,

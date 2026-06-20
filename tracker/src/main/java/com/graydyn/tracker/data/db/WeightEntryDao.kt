@@ -14,6 +14,9 @@ interface WeightEntryDao {
     @Query("SELECT * FROM weight_entries WHERE date <= :date ORDER BY date DESC LIMIT 1")
     fun observeEffectiveWeight(date: String): Flow<WeightEntry?>
 
+    @Query("SELECT * FROM weight_entries WHERE date BETWEEN :start AND :end ORDER BY date ASC")
+    fun getWeightsInRange(start: String, end: String): Flow<List<WeightEntry>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entry: WeightEntry)
 }
