@@ -88,51 +88,50 @@ fun StatsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                return@Column
-            }
-
-            // Calories chart
-            ChartCard(title = "Calories") {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    LegendSwatch(MacroCalories); Text("  Calories", style = MaterialTheme.typography.labelSmall)
-                    Spacer(Modifier.width(16.dp))
-                    LegendSwatch(Color(0xFF9E9E9E)); Text("  Goal", style = MaterialTheme.typography.labelSmall)
+            } else {
+                // Calories chart
+                ChartCard(title = "Calories") {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        LegendSwatch(MacroCalories); Text("  Calories", style = MaterialTheme.typography.labelSmall)
+                        Spacer(Modifier.width(16.dp))
+                        LegendSwatch(Color(0xFF9E9E9E)); Text("  Goal", style = MaterialTheme.typography.labelSmall)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    val calValues = stats.dailyCalories.values.map { it.toFloat() }
+                    LineChart(
+                        series = listOf(
+                            ChartSeries(
+                                points = stats.dailyCalories.mapValues { it.value.toFloat() },
+                                color = MacroCalories,
+                                breakOnGaps = true
+                            )
+                        ),
+                        xDomainMax = stats.daysInMonth,
+                        yRange = StatsMath.yRange(calValues, stats.calorieGoal?.toFloat()),
+                        referenceLine = stats.calorieGoal?.toFloat(),
+                        yLabel = { "${it.toInt()}" }
+                    )
                 }
+
                 Spacer(Modifier.height(8.dp))
-                val calValues = stats.dailyCalories.values.map { it.toFloat() }
-                LineChart(
-                    series = listOf(
-                        ChartSeries(
-                            points = stats.dailyCalories.mapValues { it.value.toFloat() },
-                            color = MacroCalories,
-                            breakOnGaps = true
-                        )
-                    ),
-                    xDomainMax = stats.daysInMonth,
-                    yRange = StatsMath.yRange(calValues, stats.calorieGoal?.toFloat()),
-                    referenceLine = stats.calorieGoal?.toFloat(),
-                    yLabel = { "${it.toInt()}" }
-                )
-            }
 
-            Spacer(Modifier.height(8.dp))
-
-            // Weight chart
-            ChartCard(title = "Weight (lbs)") {
-                val wValues = stats.dailyWeight.values.toList()
-                LineChart(
-                    series = listOf(
-                        ChartSeries(
-                            points = stats.dailyWeight,
-                            color = MacroProtein,
-                            breakOnGaps = false
-                        )
-                    ),
-                    xDomainMax = stats.daysInMonth,
-                    yRange = StatsMath.yRange(wValues, null),
-                    referenceLine = null,
-                    yLabel = { formatAmount(it) }
-                )
+                // Weight chart
+                ChartCard(title = "Weight (lbs)") {
+                    val wValues = stats.dailyWeight.values.toList()
+                    LineChart(
+                        series = listOf(
+                            ChartSeries(
+                                points = stats.dailyWeight,
+                                color = MacroProtein,
+                                breakOnGaps = false
+                            )
+                        ),
+                        xDomainMax = stats.daysInMonth,
+                        yRange = StatsMath.yRange(wValues, null),
+                        referenceLine = null,
+                        yLabel = { formatAmount(it) }
+                    )
+                }
             }
         }
     }
