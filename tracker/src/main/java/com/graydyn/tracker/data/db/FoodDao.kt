@@ -4,12 +4,24 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.graydyn.tracker.data.model.Food
 
 @Dao
 interface FoodDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(foods: List<Food>)
+
+    /**
+     * Inserts in chunks inside a single transaction. Without an explicit
+     * transaction each insert commits on its own, which on a fresh install
+     * turns the ~half-million-row seed into hundreds of thousands of fsyncs.
+     * Chunking keeps SQLite's bound-argument count within limits.
+     */
+    @Transaction
+    suspend fun insertAllBatched(foods: List<Food>) {
+        foods.chunked(SEED_INSERT_CHUNK_SIZE).forEach { insertAll(it) }
+    }
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(food: Food): Long
@@ -40,4 +52,13 @@ interface FoodDao {
 
     @Query("SELECT COUNT(*) FROM foods")
     suspend fun count(): Int
+
+    companion object {
+        /**
+         * Rows per insert statement during seeding. Each [Food] binds ~20
+         * columns; staying well under SQLite's 999-variable limit (≈49 rows)
+         * with margin avoids "too many SQL variables".
+         */
+        private const val SEED_INSERT_CHUNK_SIZE = 40
+    }
 }

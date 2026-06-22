@@ -31,6 +31,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -75,6 +77,7 @@ fun SearchScreen(
 ) {
     val query by viewModel.query.collectAsState()
     val results by viewModel.searchResults.collectAsState()
+    val seedState by viewModel.seedState.collectAsState()
     val selectedFood by viewModel.selectedFood.collectAsState()
     val quantity by viewModel.quantity.collectAsState()
     val proteinOnly by viewModel.proteinOnly.collectAsState()
@@ -160,8 +163,13 @@ fun SearchScreen(
                 Text("Create new food")
             }
 
-            if (results.isEmpty()) {
-                EmptyState(query = query)
+            val emptyState = searchEmptyState(
+                query = query,
+                hasResults = results.isNotEmpty(),
+                seedState = seedState
+            )
+            if (emptyState != null) {
+                EmptyState(state = emptyState)
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
@@ -208,7 +216,20 @@ fun SearchScreen(
 }
 
 @Composable
-private fun EmptyState(query: String) {
+private fun EmptyState(state: SearchEmptyState) {
+    val title = when (state) {
+        SearchEmptyState.SEEDING -> "Setting up your food database"
+        SearchEmptyState.PROMPT -> "Search the food database"
+        SearchEmptyState.NO_MATCHES -> "No matches found"
+    }
+    val subtitle = when (state) {
+        SearchEmptyState.SEEDING ->
+            "This happens only the first time you open the app. " +
+                "Your results will appear here in a moment—no need to search again."
+        SearchEmptyState.PROMPT -> "Type a name to find foods"
+        SearchEmptyState.NO_MATCHES -> "Try a different search term"
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -223,24 +244,33 @@ private fun EmptyState(query: String) {
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    Icons.Default.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(28.dp)
-                )
+                if (state == SearchEmptyState.SEEDING) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(28.dp),
+                        strokeWidth = 3.dp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = if (query.isBlank()) "Search the food database" else "No matches found",
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = if (query.isBlank()) "Type a name to find foods" else "Try a different search term",
+                text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
             )
         }
     }

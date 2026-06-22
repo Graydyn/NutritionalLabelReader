@@ -16,6 +16,7 @@ import com.graydyn.tracker.data.model.SourceType
 import com.graydyn.tracker.data.repository.DiaryRepository
 import com.graydyn.tracker.data.repository.FoodRepository
 import com.graydyn.tracker.data.repository.UserPreferencesRepository
+import com.graydyn.tracker.data.seed.SeedState
 import com.graydyn.tracker.ui.components.formatAmount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -33,7 +35,8 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class SearchViewModel(
     application: Application,
-    userPreferencesRepository: UserPreferencesRepository
+    userPreferencesRepository: UserPreferencesRepository,
+    val seedState: StateFlow<SeedState>
 ) : AndroidViewModel(application) {
 
     private val db = TrackerDatabase.getInstance(application)
@@ -44,8 +47,12 @@ class SearchViewModel(
     val query: StateFlow<String> = _query.asStateFlow()
 
     val searchResults: StateFlow<List<Food>> =
-        _query
-            .debounce(300)
+        combine(
+            _query.debounce(300),
+            // Re-run the search once seeding finishes so results appear without
+            // the user having to retype the query they entered during the wait.
+            seedState
+        ) { q, _ -> q }
             .mapLatest { q ->
                 if (q.isBlank()) emptyList()
                 else foodRepo.search(q)
@@ -215,7 +222,11 @@ class SearchViewModel(
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]!!
                 val trackerApp = app as TrackerApplication
-                return SearchViewModel(app, trackerApp.userPreferencesRepository) as T
+                return SearchViewModel(
+                    app,
+                    trackerApp.userPreferencesRepository,
+                    trackerApp.seedState
+                ) as T
             }
         }
     }

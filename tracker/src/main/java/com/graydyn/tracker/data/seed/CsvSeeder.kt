@@ -18,7 +18,7 @@ object CsvSeeder {
                 parseLine(line, hasFoundational)?.let { foods.add(it) }
             }
         }
-        dao.insertAll(foods)
+        dao.insertAllBatched(foods)
         Log.d(TAG, "Seeded ${foods.size} foods")
     }
 
